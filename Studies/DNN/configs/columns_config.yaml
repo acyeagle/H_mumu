@@ -39,7 +39,6 @@ vars_to_save:
     - event
     - period
     - run
-    - sample_type
   Categories:
     - HasVBF
     - baseline
