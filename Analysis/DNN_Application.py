@@ -81,7 +81,7 @@ class DNNProducer:
             config = tomllib.load(f)
         parity = config["kfold"]["k"]
         # Input features
-        filepath = os.path.join(directory, "ds_setup", "general.yaml")
+        filepath = os.path.join(directory, "configs", "columns_config.yaml")
         with open(filepath, "r") as f:
             columns_config = yaml.safe_load(f)
         input_features = parse_column_names(
