@@ -37,7 +37,7 @@ def objective(trial, config, train_data, valid_data, test_data, test_df, device=
     hidden_layers = trial.suggest_int("hidden_layers", 1, 8)
     #batch_size = trial.suggest_int("batch_size", 32, 5000)
     #lr = trial.suggest_float("lr", 1e-5, 1e-3)
-    dropout = trial.suggest_float("dropout", 0, 0.5)
+    dropout = trial.suggest_float("dropout", 0, 0.4)
 
     # Update config dict with the study params
     input_size = config["network"]["input_size"]
@@ -125,7 +125,7 @@ config["network"]["input_size"] = len(dataloader.data_columns)
 config["network"]["output_size"] = len(train_data[0][1][0])
 
 # Do the dang thing!
-study_name = "v3run2_hyperparams"
+study_name = "v3mk2_hyperparams_4"
 study = optuna.create_study(
     study_name=study_name,
     storage=f"sqlite:///study_{study_name}.db",

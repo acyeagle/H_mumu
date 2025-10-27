@@ -78,3 +78,4 @@ if __name__ == "__main__":
     tester.make_roc_plot(log=False)
     if config['dataloader']['classification'] == "multiclass":
         tester.plot_multiclass_probs()
+    tester.make_thist()

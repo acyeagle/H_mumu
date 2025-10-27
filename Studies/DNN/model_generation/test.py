@@ -9,6 +9,8 @@ import torch
 import uproot
 from sklearn.metrics import auc, roc_curve
 from tqdm import tqdm
+from statsmodels.stats.weightstats import DescrStatsW
+from pprint import pprint
 
 mplhep.style.use(mplhep.styles.CMS)
 
@@ -136,15 +138,35 @@ class Tester:
         bkg_eff = 1 - (np.cumsum(bkg_hist) / np.sum(bkg_hist))
         return sig_eff, bkg_eff
 
+    # def _calc_transformed_hist(self):
+    #     """
+    #     Counts the populations for the DNN' plots from AN2019_205, fig 14
+    #     """
+    #     df = self.testing_df
+    #     # Calculate bin edges for percentiles
+    #     signal = df[df.Label == 1]
+    #     q = np.linspace(0, 100, self.n_bins + 1)
+    #     bin_edges = np.percentile(signal.NN_Output * signal.Class_Weight, q)
+    #     # Calculate the bin populations for each process
+    #     counts_lookup = {}
+    #     for p in pd.unique(df.process):
+    #         selected = df[df.process == p]
+    #         counts, _ = np.histogram(
+    #             selected.NN_Output, weights=selected.Class_Weight, bins=bin_edges
+    #         )
+    #         counts_lookup[p] = counts
+    #     return bin_edges, counts_lookup
+
     def _calc_transformed_hist(self):
         """
         Counts the populations for the DNN' plots from AN2019_205, fig 14
         """
         df = self.testing_df
         # Calculate bin edges for percentiles
-        signal = df[df.Label == 1]
-        q = np.linspace(0, 100, self.n_bins + 1)
-        bin_edges = np.percentile(signal.NN_Output, q)
+        signal = df[df.process == 'VBFHto2Mu']
+        wq = DescrStatsW(data=signal.NN_Output, weights=signal.Class_Weight)
+        p = np.linspace(0, 1, self.n_bins + 1)
+        bin_edges = wq.quantile(p, return_pandas=False)
         # Calculate the bin populations for each process
         counts_lookup = {}
         for p in pd.unique(df.process):
@@ -153,6 +175,8 @@ class Tester:
                 selected.NN_Output, weights=selected.Class_Weight, bins=bin_edges
             )
             counts_lookup[p] = counts
+        print("Bin edges:", bin_edges)
+        pprint(counts_lookup)
         return bin_edges, counts_lookup
 
     @staticmethod
