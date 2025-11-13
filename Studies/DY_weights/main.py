@@ -12,10 +12,8 @@ import torch
 from model_generation.dataloader import DataLoader
 from model_generation.kfold import KFolder
 from model_generation.network import Network
-from model_generation.preprocess import Preprocessor
 from model_generation.test import Tester
 from model_generation.train import Trainer
-from model_generation.onnx_exporter import export_to_onnx
 
 """
 This is the high-level script describing a full train/test cycle.
@@ -72,16 +70,11 @@ def write_parameters(start, end, config, dataset, variables_used):
         pprint(variables_used, stream=f)
 
 
-def build_layer_list(config, dataloader, p):
+def build_layer_list(config, dataloader):
     # Modify layer_list to have input and output layers
     layer_list = config["network"]["layer_list"]
-    # Look at the number of data columns
     input_size = len(dataloader.data_columns)
-    # Look at first y (label) element shape
-    if dataloader.classification == "binary":
-        output_size = 1
-    else:
-        output_size = len(p)
+    output_size = 1
     config["network"]["layer_list"] = [input_size] + layer_list + [output_size]
     return config
 
@@ -112,31 +105,15 @@ if __name__ == "__main__":
     df = dataloader.build_master_df(args.rootfile)
     print("Initial Dataframe size:", len(df))
     df = dataloader._add_labels(df)
-    if dataloader.classification == "multiclass":
-        df = dataloader._add_multiclass_labels(df)
     df = dataloader._add_class_weights(df)
-
-    #df['Training_Weight'] = df.Class_Weight.values.copy()
-    # relabel = df.Label.apply(
-    #     lambda x: -1 if x==0 else 1
-    # )
-    # flipping_array = df.Training_Weight.apply(
-    #     lambda x: -1 if x < 0 else 1
-    # )
-    # relabel = relabel * flipping_array
-    # relabel = relabel.apply(
-    #     lambda x: 0 if x == -1 else 1
-    # )
-    # relabel = relabel.astype(float)
-    # print(relabel)
-    # df['Label'] = relabel
-    #df['Training_Weight'] = np.abs(df.Training_Weight.values)
+    df = dataloader._add_training_weights(df)
+    if config["dataloader"]['equalize_weights']:
+        df = dataloader._equalize_train_weights(df)
 
     # Add the correct layer-list to the config (instead of just hidden)
     p = pd.unique(df.process)
-    config = build_layer_list(config, dataloader, p)
+    config = build_layer_list(config, dataloader)
     # Init our other objects
-    preprocessor = Preprocessor(**config["preprocess"] | config["dataloader"])
     kfold = KFolder(**config["kfold"])
 
     # Set device for training (cpu or cuda)
@@ -147,9 +124,11 @@ if __name__ == "__main__":
         print(f"Current device: {torch.cuda.current_device()}")
     else:
         print("*WARNING: training on CPU (slow)")
-        device = None
+        raise ValueError("Killing cause a CPU train sucks")
 
-    print("Postprocess Dataframe size:", len(df))
+    # Stash the initial DF (so can compare after)
+    df.to_pickle("initial_loaded_df.pkl")
+
     # Start the k-fold training loop
     models = {}
     start = datetime.now()
@@ -159,9 +138,6 @@ if __name__ == "__main__":
     ):
         train_df, valid_df, empty_df = dataloader._split_dataframe(everything_else)
         assert len(empty_df) == 0
-        # Add a Training_Weight column and apply any needed renorms
-        train_df = preprocessor.add_train_weights(train_df)
-        valid_df = preprocessor.add_train_weights(valid_df)
 
         # Renorm sets to m=0 s=1 separately.
         # Don't want to leak info from test into train
@@ -203,9 +179,6 @@ if __name__ == "__main__":
         tester.test(model)
 
         # Stash the output of the testing inference
-        # cols = ["FullEventId", "NN_Output"]
-        # if tester.classification == "multiclass":
-        #     cols += [f"Prob_{p}" for p in tester.processes]
         results = tester.testing_df
         if test_results is None:
             test_results = results
@@ -227,9 +200,6 @@ if __name__ == "__main__":
         # Save model (torch)
         with open(outname + ".torch", "wb") as f:
             torch.save(model, f)
-        (x_data, _), _ = train_data
-        # Save model (onnx)
-        export_to_onnx(x_data, model, outname, device, m, s)
 
         # Back to the main kfold dir
         os.chdir(base_dir)
@@ -241,20 +211,14 @@ if __name__ == "__main__":
     # Combine the inference results with the main dataframe
     print("Size of testing results:", len(test_results))
     print("Size of existing DF:", len(df))
-    #df = pd.merge(df, test_results['NN_Output'], how='left', left_index=True, right_index=True)
     print("Size of merged DF:", len(df))
-    df.to_pickle("initial_testing_df.pkl")
     test_results.to_pickle("evaluated_testing_df.pkl")
 
     # Plot/save
     tester.testing_df = test_results
-    tester.make_hist(log=False, weight=True, norm=True)
+    tester.make_hist(log=False, weight=True, norm=False)
     tester.make_hist(log=True, weight=True, norm=False)
-    tester.make_multihist(log=True, weight=True)
-    tester.make_stackplot(log=True)
-    tester.make_transformed_stackplot()
+    tester.make_hist(log=False, weight=True, norm=True)
+    tester.make_hist(log=True, weight=True, norm=True)
     tester.make_roc_plot(log=True)
     tester.make_roc_plot(log=False)
-    if dataloader.classification == "multiclass":
-        tester.plot_multiclass_probs()
-    tester.make_thist()

@@ -201,6 +201,83 @@ def JetCollectionDef(df):
     return df
 
 
+def VBFNetJetCollectionDef(df):
+    if "Jet_idx" not in df.GetColumnNames():
+        print("Jet_idx not in df.GetColumnNames")
+        df = df.Define(f"Jet_idx", f"CreateIndexes(Jet_pt.size())")
+    df = df.Define(
+        f"Jet_p4",
+        f"GetP4(Jet_pt, Jet_eta, Jet_phi, Jet_mass, Jet_idx)",
+    )
+
+    #### Jet PreSelection ####
+    df = df.Define(
+        "Jet_preSel",
+        f"""v_ops::pt(Jet_p4) > 20 && abs(v_ops::eta(Jet_p4))< 4.7 && (Jet_jetId & 2) """,
+    )
+    df = df.Define(
+        "Jet_preSel_andDeadZoneVetoMap",
+        "Jet_preSel && !Jet_vetoMap",
+    )
+
+    df = df.Define(
+        f"Jet_NoOverlapWithMuons",
+        f"RemoveOverlaps(Jet_p4, Jet_preSel_andDeadZoneVetoMap, {{mu1_p4, mu2_p4}}, 0.4)",
+    )
+    df = df.Define(
+        f"SelectedJet_p4",
+        f"Jet_p4[Jet_NoOverlapWithMuons]",
+    )
+    df = df.Define(
+        f"SelectedJet_index",
+        f"Jet_idx[Jet_NoOverlapWithMuons]",
+    )
+
+    ### Final state definitions: removing bTagged jets - deepJet ####
+    df = df.Define(
+        "Jet_btag_Veto_loose_deepJet",
+        "Jet_btagDeepFlavB >= 0.0614 && abs(v_ops::eta(Jet_p4))< 2.5 ",
+    )
+    df = df.Define(
+        "Jet_btag_Veto_medium_deepJet",
+        "Jet_btagDeepFlavB >= 0.3196 && abs(v_ops::eta(Jet_p4))< 2.5 ",
+    )
+    df = df.Define(
+        "JetTagSel_deepJet",
+        "Jet_p4[Jet_NoOverlapWithMuons && Jet_btag_Veto_medium_deepJet].size() < 1  && Jet_p4[Jet_NoOverlapWithMuons && Jet_btag_Veto_loose_deepJet].size() < 2",
+    )
+
+    #### Final state definitions: removing bTagged jets - pNet ####
+    df = df.Define(
+        "Jet_btag_Veto_loose",
+        "Jet_btagPNetB >= 0.0499 && abs(v_ops::eta(Jet_p4))< 2.5 ",
+    )  # 0.0499 is the loose working point for PNet B-tagging in Run3
+    df = df.Define(
+        "Jet_btag_Veto_medium",
+        "Jet_btagPNetB >= 0.2605 && abs(v_ops::eta(Jet_p4))< 2.5 ",
+    )  # 0.2605 is the medium working point for PNet B-tagging in Run3
+    # df = df.Define("Jet_Veto_tight", "Jet_btagPNetB >= 0.6484")  # 0.6484 is the tight working point for PNet B-tagging in Run3
+    df = df.Define(
+        "JetTagSel",
+        "Jet_p4[Jet_NoOverlapWithMuons && Jet_btag_Veto_medium].size() < 1  && Jet_p4[Jet_NoOverlapWithMuons && Jet_btag_Veto_loose].size() < 2",
+    )
+
+    df = df.Define(
+        "VBFCandJet_selection", 
+        "Jet_NoOverlapWithMuons && Jet_pt > 25 && ((ROOT::VecOps::abs(Jet_eta) < 2.5) || (ROOT::VecOps::abs(Jet_eta) > 3.0) || (Jet_pt > 50));
+    )
+
+    df = df.Define(
+        "FilteredJet_pt", "Jet_pt[VBFCandJet_selection]"
+    )
+
+    # and do the same for whatever other variables
+    # Jet_btagPNetQvG 
+    # Jet_puIdDisc
+
+    return df
+
+
 def VBFJetSelection(df):
     df = df.Define("VBFJetCand", "FindVBFJets(Jet_p4,Jet_NoOverlapWithMuons)")
     df = df.Define("HasVBF", "return static_cast<bool>(VBFJetCand.isVBF) ")
@@ -735,4 +812,16 @@ def PrepareDfForNNInputs(dfBuilder):
     dfBuilder.SignRegionDef()
     dfBuilder.defineRegions()
     dfBuilder.defineCategories()
+    return dfBuilder
+
+def PrepareDfForVBFNetworkInputs(dfBuilder):
+    #dfBuilder.RescaleXS()
+    dfBuilder.defineChannels()
+    dfBuilder.defineTriggers()
+    #dfBuilder.AddScaReOnBS()
+    dfBuilder.df = GetMuMuObservables(dfBuilder.df)
+    dfBuilder.df = GetMuMuMassResolution(dfBuilder.df)
+    dfBuilder.df = VBFNetJetCollectionDef(dfBuilder.df)
+    dfBuilder.SignRegionDef()
+    dfBuilder.defineRegions()
     return dfBuilder

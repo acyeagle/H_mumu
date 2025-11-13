@@ -1,0 +1,33 @@
+
+[meta]
+results_dir = "/afs/cern.ch/user/a/ayeagle/H_mumu/Studies/VBF_net/results"
+use_cuda = true
+
+[dataset]
+signal_types = ['VBFHto2Mu', 'EWK']
+max_jets = 4
+
+[splitting]
+validation_size = 0.2
+k = 3
+
+[network]  
+# Hidden layers only, input layer size pulled from the used columns
+layer_list = [24, 12, 6]
+
+[training]
+batch_size = 100
+epochs = 30
+early_stop = false
+patience = 20
+
+[optimizer]
+algo = "Adam"   # Currently, SGD and Adam are supported
+lr = 0.001
+weight_decay = 0.0
+
+[testing]
+# Number of bins for all histograms
+n_bins = 12
+
+

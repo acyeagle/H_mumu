@@ -1,0 +1,85 @@
+vars_to_save:
+  Muon:
+    - mu{}_eta
+    - mu{}_pt
+  # SoftJet:
+  #   - Et # transverse energy
+  #   - HtCh_fraction # hadronic transverse energy fraction from charged particles
+  #   - HtHF_fraction # hadronic transverse energy fraction in the HF calorimeter
+  #   - HtNe_fraction # hadronic transverse energy fraction from neutral particles
+  #   - energy
+  VBFJet: # j1 and j2, separated in eta ecc.. in VBF events (single jet observables)
+    - eta
+    - pt
+    - btagPNetQvG
+  VBFJetPair:
+    - m_jj
+    - delta_eta_jj
+    - pt_jj
+  MuJet:
+    - R_pt
+    # - minDeltaEta
+    - minDeltaEtaSigned
+    - minDeltaPhi
+    - Zepperfield_Var
+    - pt_centrality
+  MuPair:
+    - dR_mumu
+    - m_mumu
+    - eta_mumu
+    - cosTheta_CS
+    - phi_mumu
+    - pt_mumu
+    - y_mumu
+    - phi_CS
+  Global:
+    - FullEventId
+    # - luminosityBlock
+    - isData
+    # - event
+    # - period
+    # - run
+    - era
+    - process
+    - dataset
+  Categories:
+    - Z_sideband
+    - HasVBF
+    - baseline
+    # - baseline_Zmumu
+    - ggH
+    # - ggH_Zmumu
+    # - ggH_Zmumu_JetVeto
+    - VBF
+    - VBF_JetVeto
+    # - VBF_Zmumu
+    # - VBF_Zmumu_JetVeto
+  Regions:
+    - Signal_ext
+    - H_sideband
+    - Signal_Fit
+  Sign:
+    - OS
+  # nJets:
+  # - nJet
+  # - nSelectedJet
+  Weight:
+    # - weight_mu1_HighPt_MuonID_SF_MediumIDCentral
+    # - weight_mu1_HighPt_MuonID_SF_RecoCentral
+    # - weight_mu1_LowPt_MuonID_SF_MediumIDCentral
+    # - weight_mu1_MuonID_SF_LoosePFIsoCentral
+    # - weight_mu1_MuonID_SF_MediumIDLoosePFIsoCentral
+    # - weight_mu1_MuonID_SF_MediumID_TrkCentral
+    # - weight_mu2_HighPt_MuonID_SF_MediumIDCentral
+    # - weight_mu2_HighPt_MuonID_SF_RecoCentral
+    # - weight_mu2_LowPt_MuonID_SF_MediumIDCentral
+    # - weight_mu2_MuonID_SF_LoosePFIsoCentral
+    # - weight_mu2_MuonID_SF_MediumIDLoosePFIsoCentral
+    # - weight_mu2_MuonID_SF_MediumID_TrkCentral
+    #- weight_trigSF_singleMu
+    - weight_MC_Lumi_pu
+    # - weight_EWKCorr_VptCentral
+    # - weight_DYw_DYWeightCentral
+    - m_mumu_resolution
+    # - weight_EWKCorr_ewcorrCentral
+    #- final_weight

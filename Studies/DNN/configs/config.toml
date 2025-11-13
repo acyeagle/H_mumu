@@ -21,13 +21,15 @@ renorm_inputs = 'gauss'
 
 [preprocess]
 # Reweigh/rebalance options
-uniform_train_weight = true        # If true, all train weights (prenorm) = 1
-zero_negative_weights = false      # Remove the effect of negative weights for training only
+uniform_train_weight = false        # If true, all train weights (prenorm) = 1
+proportional_weight = false         # Sets the weight per process to the average weight of that class (keeps %'s, no negatives)
+zero_negative_weights = true      # Remove the effect of negative weights for training only
 equalize_class_weights = true      # Sets each class weight to be equal (training only!)
-renorm_inputs = 'gauss'            # Apply some scaling/renorm to the input columns. Can be 'no' or 'gauss'
 downsample_upweight = false        # Whether or not to downsample majority classes
-target_ratio = 1                  # New N_{majority_class}/N_{minority_class} ratio (if using downsample)
+target_ratio = 1                   # New N_{majority_class}/N_{minority_class} ratio (if using downsample)
 use_mass_resolution = false
+relabel_negative_weights = false
+upscale_weights_to_sample_size = false
 
 [kfold]
 k = 4
@@ -35,21 +37,21 @@ k = 4
 [network]  
 # Hidden layers only
 # Input layer size pulled from the used columns
-layer_list = [50, 50, 50, 50]
-dropout = 0.10
+layer_list = [52, 26, 26, 13]
+dropout = 0.0
 
 [training]
 # batch_size = 0 means use the whole set (1 batch per epoch)
-batch_size = 1200
+batch_size = 3000
 epochs = 64
-early_stop = false
+early_stop = true
 early_threshold = 0
-patience = 25
+patience = 20
 label_smoothing = 0.0
 
 [optimizer]
 algo = "Adam"   # Currently, SGD and Adam are supported
-lr = 0.0006
+lr = 0.001
 weight_decay = 0.0
 #momentum = 0.7
 #dampening = 0.2

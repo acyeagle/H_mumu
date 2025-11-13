@@ -6,11 +6,12 @@ import numpy as np
 import pandas as pd
 import ROOT as root
 import torch
-import uproot
+#import uproot
 from sklearn.metrics import auc, roc_curve
 from tqdm import tqdm
 from statsmodels.stats.weightstats import DescrStatsW
 from pprint import pprint
+from tqdm import tqdm
 
 mplhep.style.use(mplhep.styles.CMS)
 
@@ -55,8 +56,8 @@ class Tester:
     def _set_color_map(self):
         return {
             "DY": "gold",
-            "TT": "blue",
-            "VV": "lightslategray",
+            "TT": "cornflowerblue",
+            "VV": "lightgray",
             "EWK": "magenta",
             "VBFHto2Mu": "green",
             "GluGluHto2Mu": "red",
@@ -237,7 +238,7 @@ class Tester:
         # Set rest of plot and save/show
         plt.xlabel("Network output")
         plt.legend(bbox_to_anchor=(1.05, 1), loc="upper left")
-        mplhep.cms.label(com=13.6)
+        mplhep.cms.label(com=13.6, lumi=62.4)
         if show:
             plt.show()
         else:
@@ -277,7 +278,7 @@ class Tester:
         # Finish plot config
         plt.xlabel("Network output")
         plt.legend(bbox_to_anchor=(1.05, 1), loc="upper left")
-        mplhep.cms.label(com=13.6)
+        mplhep.cms.label(com=13.6, lumi=62.4)
         # Out (save or show)
         if show:
             plt.show()
@@ -337,7 +338,7 @@ class Tester:
         plt.xlabel("Network output")
         plt.ylabel("Events")
         plt.legend(bbox_to_anchor=(1.05, 1), loc="upper left")
-        mplhep.cms.label(com=13.6)
+        mplhep.cms.label(com=13.6, lumi=62.4)
         if show:
             plt.show()
         else:
@@ -374,7 +375,7 @@ class Tester:
         # Format and go!
         plt.xlabel(r"$\epsilon_{sig}$")
         plt.ylabel(r"$\epsilon_{bkg}$")
-        mplhep.cms.label(com=13.6)
+        #mplhep.cms.label()
         plt.grid()
         plt.xlim(0, 1)
         if log:
@@ -414,7 +415,7 @@ class Tester:
             baseline += counts_lookup[p]
         # and add the non-stackers
         for p in other_proc:
-            plt.stairs(counts_lookup[p], x, label=p, color=self.color_map[p])
+            plt.stairs(counts_lookup[p], x, label=p, color=self.color_map[p], linewidth=2)
 
         # Add S/sqrt(B) to plot
         sig_total = np.zeros(len(baseline))
@@ -438,7 +439,7 @@ class Tester:
         plt.yticks(minor_ticks, minor=True)
         # plt.legend(bbox_to_anchor=(1.05, 1), loc="upper left")
         plt.legend()
-        mplhep.cms.label(com=13.6)
+        mplhep.cms.label(com=13.6, lumi=62.4)
         if show:
             plt.show()
         else:
@@ -474,6 +475,35 @@ class Tester:
 
     ### Functions for working with Combine
 
+    # def make_thist(self):
+    #     """
+    #     Saves a THist to be used with combine.
+    #     Combine datacard expect two hists named:
+    #     "signal" and "background"
+    #     """
+    #     df = self.testing_df
+    #     bin_edges, counts_lookup = self._calc_transformed_hist()
+    #     # Calc sig and bkg totals
+    #     sig = np.zeros(len(bin_edges) - 1)
+    #     bkg = np.zeros(len(bin_edges) - 1)
+    #     for p in pd.unique(df.process):
+    #         x = counts_lookup[p]
+    #         if p in self.signal_types:
+    #             sig += x
+    #         else:
+    #             bkg += x
+    #     # Make the histograms
+    #     sig_hist = root.TH1F("signal", "signal", self.n_bins, 0, self.n_bins)
+    #     bkg_hist = root.TH1F("background", "background", self.n_bins, 0, self.n_bins)
+    #     for i, (s, b) in enumerate(zip(sig, bkg)):
+    #         sig_hist.SetBinContent(i + 1, s)
+    #         # SetBinError -> 
+    #         bkg_hist.SetBinContent(i + 1, b)
+    #     # Save to a root file
+    #     with uproot.recreate("hists.root") as f:
+    #         f["signal"] = sig_hist
+    #         f["background"] = bkg_hist
+
     def make_thist(self):
         """
         Saves a THist to be used with combine.
@@ -481,23 +511,21 @@ class Tester:
         "signal" and "background"
         """
         df = self.testing_df
-        bin_edges, counts_lookup = self._calc_transformed_hist()
-        # Calc sig and bkg totals
-        sig = np.zeros(len(bin_edges) - 1)
-        bkg = np.zeros(len(bin_edges) - 1)
+        bin_edges, _ = self._calc_transformed_hist()
+        # Init the histograms
+        histo_dict = {}
         for p in pd.unique(df.process):
-            x = counts_lookup[p]
-            if p in self.signal_types:
-                sig += x
-            else:
-                bkg += x
-        # Make the histograms
-        sig_hist = root.TH1F("signal", "signal", self.n_bins, 0, self.n_bins)
-        bkg_hist = root.TH1F("background", "background", self.n_bins, 0, self.n_bins)
-        for i, (s, b) in enumerate(zip(sig, bkg)):
-            sig_hist.SetBinContent(i + 1, s)
-            bkg_hist.SetBinContent(i + 1, b)
+            hist = root.TH1F(p, p, self.n_bins, bin_edges)
+            hist.Sumw2(True)
+            histo_dict[p] = hist
+            count_name = f"{p}_counts"
+            histo_dict[count_name] = root.TH1F(count_name, count_name, self.n_bins, bin_edges)
+        for _, row in tqdm(df.iterrows(), total=len(df)):
+            hist = histo_dict[row.process]
+            hist.Fill(row.NN_Output, row.Class_Weight)
+            count_hist = histo_dict[f"{row.process}_counts"]
+            count_hist.Fill(row.NN_Output)
         # Save to a root file
-        with uproot.recreate("hists.root") as f:
-            f["signal"] = sig_hist
-            f["background"] = bkg_hist
+        with root.TFile.Open("hists.root", "RECREATE") as outFile:
+            for k, v in histo_dict.items():
+                outFile.WriteObject(v, k)

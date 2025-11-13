@@ -25,31 +25,19 @@ class DataLoader:
     def __init__(
         self,
         columns_config,
-        signal_types,
         valid_size,
         test_size,
         selection_cut,
-        classification,
         renorm_inputs,
-        file_stitching=None,
         **kwargs,
     ):
         self._get_column_info(columns_config)
-        self.signal_types = signal_types
         self.valid_size = valid_size
         self.test_size = test_size
         if selection_cut == "":
             selection_cut = None
         self.selection_cut = selection_cut
-        self.classification = classification
         self.renorm_inputs = renorm_inputs
-        # File stitching defines the MC_Lumi_pu -> Class_Weight corrections
-        if file_stitching == "":
-            file_stitching = None
-        if file_stitching is not None:
-            with open(file_stitching, "r") as f:
-                file_stitching = toml.load(f)
-        self.file_stitching = file_stitching
 
     def _get_column_info(self, columns_config):
         with open(columns_config, "r") as file:
@@ -77,33 +65,36 @@ class DataLoader:
         """
         Adds the training labels [0, 1] for bkg and sig (resp.)
         """
-        df["Label"] = df.process.apply(
-            lambda x: 1 if x in self.signal_types else 0
+        df["Label"] = df.weight_MC_Lumi_pu.apply(
+            lambda x: 1 if x > 0 else 0
         ).astype(float)
         return df
 
-    def _add_multiclass_labels(self, df):
-        """
-        One-hot encoded label for multiclass
-        """
-        all_process = sorted(pd.unique(df.process))
-        self.label_cols = []
-        for p in all_process:
-            labels = np.zeros(len(df))
-            labels[df.process == p] = 1
-            col_name = f"Label_{p}"
-            self.label_cols.append(col_name)
-            df[col_name] = labels
-        return df
 
     def _add_class_weights(self, df):
         """
         Class_Weight is the corrected MC_Lumi_pu applied for all plotting
         """
-        df["Class_Weight"] = df.weight_MC_Lumi_pu.values.copy()
-        if self.file_stitching is not None:
-            df = self._renorm_class_weight(df)
+        df["Class_Weight"] = np.abs(df.weight_MC_Lumi_pu.values.copy())
         return df
+
+    def _add_training_weights(self, df):
+        df['Training_Weight'] = df.Class_Weight.values.copy()
+        return df
+
+    
+    def _equalize_train_weights(self, df):
+        total = np.sum(df.Training_Weight)
+        weights = df.Training_Weight.values.copy()
+        for label in [0, 1]:
+            mask = df.Label == label
+            subtotal = weights[mask].sum()
+            factor = (1 / 2) * (total / subtotal)
+            weights[mask] = weights[mask] * factor
+        df["Training_Weight"] = weights
+        return df
+        
+
 
     def _apply_gauss_renorm(self, df, means=None, stds=None):
         """
@@ -130,23 +121,6 @@ class DataLoader:
             df[col] = (data - m) / s
         return df, (means, stds)
 
-    def _renorm_class_weight(self, df):
-        """
-        Does the actual rescaling of MC_Lumi_pu to Class_Weight
-        Can include other factors, but mostly for "source degeneracy"
-        """
-        print("Applying class renorms per input file...")
-        for source_file, factors in self.file_stitching.items():
-            # Factors is currently a list, in case there are multiple causes of adjustment
-            factor = 1
-            for entry in factors:
-                factor *= entry
-            mask = df.source_file == source_file
-            scale_factor = np.ones(len(df))
-            print(source_file, 1 / factor)
-            scale_factor[mask] = 1 / factor
-            df["Class_Weight"] = df.Class_Weight * scale_factor
-        return df
 
     def _dispatch_input_renorm(self, df, m=None, s=None):
         """
@@ -189,9 +163,9 @@ class DataLoader:
         valid_df = pd.DataFrame(columns=data.columns)
         testing_df = pd.DataFrame(columns=data.columns)
         # Add each category to each dataframe
-        for category in pd.unique(data.process):
+        for category in pd.unique(data.Label):
             selected = (
-                data[data.process == category].sample(frac=1)
+                data[data.Label == category].sample(frac=1)
             )
             number = len(selected)
             valid_size = floor(number * self.valid_size)
@@ -235,8 +209,6 @@ class DataLoader:
         df = self.build_master_df(directory)
         # Modify the main dataframe
         df = self._add_labels(df)
-        if self.classification == "multiclass":
-            df = self._add_multiclass_labels(df)
         df = self._add_class_weights(df)
         # Split and return
         train_df, valid_df, test_df = self._split_dataframe(df)
@@ -250,19 +222,12 @@ class DataLoader:
         (x_data, y_data), weights
         """
         # Get labels
-        if self.classification == "binary":
-            y = df.Label.values
-            y = y.reshape([len(y), 1])
-        elif self.classification == "multiclass":
-            y = df[self.label_cols].values
+        y = df.Label.values
+        y = y.reshape([len(y), 1])
         # Get the input vectors
         x = df[self.data_columns].values
         # Class weights
-        try:
-            w = df.Training_Weight.values
-        except AttributeError:
-            w = df.Class_Weight.values
-        #w = df.Training_Weight.values
+        w = df.Training_Weight.values
         w = w.reshape([len(w), 1])
         # Return (x,y) tuple
         return (x, y), w

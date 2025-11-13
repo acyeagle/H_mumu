@@ -1,0 +1,46 @@
+
+[meta]
+results_dir = "/afs/cern.ch/user/a/ayeagle/H_mumu/Studies/DY_weights/results"
+use_cuda = true
+
+[dataloader]
+# Events selection
+selection_cut = '(process == "DY")'
+# Event splitting (training_size is what's left)
+valid_size = 0.3
+test_size = 0.0
+# Input vector def
+columns_config = '/afs/cern.ch/user/a/ayeagle/H_mumu/Studies/DY_weights/configs/columns_config.yaml'
+renorm_inputs = 'gauss'
+equalize_weights = true
+
+
+[kfold]
+k = 8
+
+[network]  
+# Hidden layers only
+# Input layer size pulled from the used columns
+layer_list = [13]
+
+[training]
+# batch_size = 0 means use the whole set (1 batch per epoch)
+batch_size = 100
+epochs = 64
+early_stop = true
+early_threshold = 0
+patience = 20
+label_smoothing = 0.0
+
+[optimizer]
+algo = "Adam"   # Currently, SGD and Adam are supported
+lr = 0.0001
+weight_decay = 0.0
+#momentum = 0.7
+#dampening = 0.2
+
+[testing]
+# Number of bins for all histograms
+n_bins = 12
+
+

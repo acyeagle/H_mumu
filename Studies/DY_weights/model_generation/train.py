@@ -9,8 +9,6 @@ import torch
 from torch.utils.data import DataLoader, TensorDataset
 from tqdm import tqdm
 
-from model_generation.focal_loss import BinaryFocalLoss
-
 
 class Trainer:
     """
@@ -42,15 +40,7 @@ class Trainer:
 
         # Determine from y_data shape if we're training in binary or multiclass mode
         self.binary_classification = len(self.training_data[0][1][0]) == 1
-        if self.binary_classification:
-            # self.loss_fn = torch.nn.BCEWithLogitsLoss(reduction="none")
-            self.loss_fn = torch.nn.BCELoss(reduction="none")
-            #self.loss_fn = BinaryFocalLoss(gamma=2, reduction="none")
-        else:
-            # self.loss_fn = torch.nn.NLLLoss(reduction="none")
-            self.loss_fn = torch.nn.CrossEntropyLoss(
-                reduction="none", label_smoothing=label_smoothing
-            )
+        self.loss_fn = torch.nn.BCELoss(reduction="none")
 
         # Any config parameters specific for the optimizer
         self.hyperparams = hyperparams

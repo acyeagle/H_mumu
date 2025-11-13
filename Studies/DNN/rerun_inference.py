@@ -47,43 +47,13 @@ def get_arguments():
         help="the .root file to use for testing and training events",
     )
     parser.add_argument(
-        "-l",
-        "--label",
+        "-d",
+        "--results_dir",
         required=False,
-        help="some string to append to the output folder name",
+        help="Directory containing the models and stuff"
     )
     args = parser.parse_args()
     return args
-
-
-def write_parameters(start, end, config, dataset, variables_used):
-    """
-    Writes the parameters used in this model generation run to a text file.
-    """
-    frmt = "%Y-%m-%d %H:%M:%S"
-    with open("used_params.txt", "w") as f:
-        f.write(f"Started training: {start.strftime(frmt)}\n")
-        f.write(f"Finished training: {end.strftime(frmt)}\n")
-        f.write(f"Dataset used: {dataset}\n")
-        f.write("\n")
-        pprint(config, stream=f)
-        f.write("\n")
-        f.write("Variables used for network input vector:\n")
-        pprint(variables_used, stream=f)
-
-
-def build_layer_list(config, dataloader, p):
-    # Modify layer_list to have input and output layers
-    layer_list = config["network"]["layer_list"]
-    # Look at the number of data columns
-    input_size = len(dataloader.data_columns)
-    # Look at first y (label) element shape
-    if dataloader.classification == "binary":
-        output_size = 1
-    else:
-        output_size = len(p)
-    config["network"]["layer_list"] = [input_size] + layer_list + [output_size]
-    return config
 
 
 if __name__ == "__main__":
@@ -93,18 +63,6 @@ if __name__ == "__main__":
     # Read in config and datasets from args
     with open(args.config, "rb") as f:
         config = tomllib.load(f)
-    # Alter the dataloader config to set test_size to zero
-    # Testing size determined by fold
-    config["dataloader"]["test_size"] = 0
-
-    # Init the output directory
-    run_name = str(uuid())
-    if args.label:
-        run_name += f"_{args.label}"
-    os.chdir(config["meta"]["results_dir"])
-    os.mkdir(run_name)
-    os.chdir(run_name)
-    base_dir = os.getcwd()
 
     # Load in all train/valid/test entries as a big DF
     # Sets initial things like class weight, sample_name, label
@@ -116,25 +74,6 @@ if __name__ == "__main__":
         df = dataloader._add_multiclass_labels(df)
     df = dataloader._add_class_weights(df)
 
-    #df['Training_Weight'] = df.Class_Weight.values.copy()
-    # relabel = df.Label.apply(
-    #     lambda x: -1 if x==0 else 1
-    # )
-    # flipping_array = df.Training_Weight.apply(
-    #     lambda x: -1 if x < 0 else 1
-    # )
-    # relabel = relabel * flipping_array
-    # relabel = relabel.apply(
-    #     lambda x: 0 if x == -1 else 1
-    # )
-    # relabel = relabel.astype(float)
-    # print(relabel)
-    # df['Label'] = relabel
-    #df['Training_Weight'] = np.abs(df.Training_Weight.values)
-
-    # Add the correct layer-list to the config (instead of just hidden)
-    p = pd.unique(df.process)
-    config = build_layer_list(config, dataloader, p)
     # Init our other objects
     preprocessor = Preprocessor(**config["preprocess"] | config["dataloader"])
     kfold = KFolder(**config["kfold"])
@@ -151,7 +90,7 @@ if __name__ == "__main__":
 
     print("Postprocess Dataframe size:", len(df))
     # Start the k-fold training loop
-    models = {}
+    os.chdir(args.results_dir)
     start = datetime.now()
     test_results = None
     for i, (test_df, everything_else) in enumerate(
@@ -159,14 +98,10 @@ if __name__ == "__main__":
     ):
         train_df, valid_df, empty_df = dataloader._split_dataframe(everything_else)
         assert len(empty_df) == 0
-        # Add a Training_Weight column and apply any needed renorms
-        train_df = preprocessor.add_train_weights(train_df)
-        valid_df = preprocessor.add_train_weights(valid_df)
 
         # Renorm sets to m=0 s=1 separately.
         # Don't want to leak info from test into train
         train_df, (m, s) = dataloader._dispatch_input_renorm(train_df)
-        valid_df, _ = dataloader._dispatch_input_renorm(valid_df, m, s)
         test_df, _ = dataloader._dispatch_input_renorm(test_df, m, s)
 
         a = len(train_df)
@@ -178,19 +113,11 @@ if __name__ == "__main__":
         print("Total:", a + b + c)
 
         # Parse into (x,y), w tuples (aka "datasets")
-        train_data = dataloader.df_to_dataset(train_df)
-        valid_data = dataloader.df_to_dataset(valid_df)
         test_data = dataloader.df_to_dataset(test_df)
 
-        # Init training run specific objects
-        model = Network(device=device, **config["network"])
-        trainer = Trainer(
-            train_data,
-            valid_data,
-            config["optimizer"],
-            **config["training"],
-            device=device,
-        )
+        # Init testing objects and run
+        model = torch.load(f"{i}_fold/trained_model_{i}.torch")
+
         tester = Tester(
             test_data,
             test_df,
@@ -198,56 +125,30 @@ if __name__ == "__main__":
             **config["testing"] | config["dataloader"],
         )
 
-        # Run the traininig!
-        model = trainer.train(model)
         tester.test(model)
 
         # Stash the output of the testing inference
-        # cols = ["FullEventId", "NN_Output"]
-        # if tester.classification == "multiclass":
-        #     cols += [f"Prob_{p}" for p in tester.processes]
-        results = tester.testing_df
+        cols = ["NN_Output"]
+        if tester.classification == "multiclass":
+            cols += [f"Prob_{p}" for p in tester.processes]
+        results = tester.testing_df[cols]
         if test_results is None:
             test_results = results
         else:
             test_results = pd.concat([test_results, results])
 
-        # Prepare an output sub-directory to save files
-        run_name = f"{i}_fold"
-        os.mkdir(run_name)
-        os.chdir(run_name)
-        print("Saving outputs to", run_name)
-
-        # Save output files
-        trainer.plot_losses()
-        trainer.plot_losses(valid=True)
-        trainer.write_loss_data()
-        outname = f"trained_model_{i}"
-
-        # Save model (torch)
-        with open(outname + ".torch", "wb") as f:
-            torch.save(model, f)
-        (x_data, _), _ = train_data
-        # Save model (onnx)
-        export_to_onnx(x_data, model, outname, device, m, s)
-
-        # Back to the main kfold dir
-        os.chdir(base_dir)
-
     # Done!
     end = datetime.now()
-    write_parameters(start, end, config, args.rootfile, dataloader.data_columns)
 
     # Combine the inference results with the main dataframe
     print("Size of testing results:", len(test_results))
     print("Size of existing DF:", len(df))
-    #df = pd.merge(df, test_results['NN_Output'], how='left', left_index=True, right_index=True)
+    df = pd.merge(df, test_results['NN_Output'], how='left', left_index=True, right_index=True)
     print("Size of merged DF:", len(df))
-    df.to_pickle("initial_testing_df.pkl")
-    test_results.to_pickle("evaluated_testing_df.pkl")
+    df.to_pickle("evaluated_testing_df.pkl")
 
     # Plot/save
-    tester.testing_df = test_results
+    tester.testing_df = df
     tester.make_hist(log=False, weight=True, norm=True)
     tester.make_hist(log=True, weight=True, norm=False)
     tester.make_multihist(log=True, weight=True)

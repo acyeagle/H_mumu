@@ -1,15 +1,12 @@
 import os
 import pickle as pkl
-from datetime import datetime
+import tomllib
 
 import matplotlib.pyplot as plt
 import numpy as np
-import tomllib
 import torch
-from torch.utils.data import DataLoader, TensorDataset
+from torch.utils.data import DataLoader
 from tqdm import tqdm
-
-from model_generation.focal_loss import BinaryFocalLoss
 
 
 class Trainer:
@@ -23,70 +20,49 @@ class Trainer:
         self,
         training_data,
         validation_data,
+        device,
         hyperparams,
+        # The rest passed from config
         batch_size,
         epochs,
         early_stop=False,
         patience=None,
-        early_threshold=0,
-        label_smoothing=0,
-        device=None,
     ):
-        # Training data as a tuple of NumPy arrays (x_data, y_data), weights
-        self.training_data = training_data
-        # Convert the data to a Torch DataLoader, for optimal training
-        self.train_dataloader = self._make_dataloader(training_data, batch_size, device)
-        self.valid_dataloader = self._make_dataloader(
-            validation_data, batch_size, device
-        )
-
-        # Determine from y_data shape if we're training in binary or multiclass mode
-        self.binary_classification = len(self.training_data[0][1][0]) == 1
-        if self.binary_classification:
-            # self.loss_fn = torch.nn.BCEWithLogitsLoss(reduction="none")
-            self.loss_fn = torch.nn.BCELoss(reduction="none")
-            #self.loss_fn = BinaryFocalLoss(gamma=2, reduction="none")
-        else:
-            # self.loss_fn = torch.nn.NLLLoss(reduction="none")
-            self.loss_fn = torch.nn.CrossEntropyLoss(
-                reduction="none", label_smoothing=label_smoothing
-            )
-
         # Any config parameters specific for the optimizer
         self.hyperparams = hyperparams
-
+        # Other passed params
+        self.device = device
         self.batch_size = batch_size
         self.epochs = epochs
         self.early_stop = early_stop
         if patience:
             self.patience = patience
-        self.threshold = early_threshold
-
         # Lists to store average epoch losses
         self.training_loss = []
         self.validation_loss = []
+        # Create loss function and dataloaders
+        self.loss_fn = torch.nn.BCELoss(reduction="none")
+        self.train_dataloader = self._make_dataloader(training_data)
+        self.valid_dataloader = self._make_dataloader(validation_data)
 
     ### Init helpers ###
 
-    def _make_dataloader(self, data, batch_size, device):
-        """
-        Converts the data (tuple of Numpy arrays) into a DataLoader object
-        """
-        (x_data, y_data), weights = data
-        if device is not None:
-            x_data = torch.tensor(x_data, device=device, dtype=torch.double)
-            y_data = torch.tensor(y_data, device=device, dtype=torch.double)
-            weights = torch.tensor(weights, device=device, dtype=torch.double)
-            dataset = TensorDataset(x_data, y_data, weights)
-        else:
-            dataset = TensorDataset(
-                torch.Tensor(x_data), torch.Tensor(y_data), torch.Tensor(weights)
-            )
-        if batch_size == 0:
-            dataloader = DataLoader(dataset, batch_size=len(dataset), shuffle=True)
-        else:
-            dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
-        return dataloader
+    def collate_fn(self, batch):
+        x, y, z = zip(*batch)
+        x = torch.tensor(np.stack(x), dtype=torch.double)
+        y = torch.tensor(np.stack(y), dtype=torch.double)
+        z = torch.tensor(np.stack(z), dtype=torch.double)
+        return x, y, z
+
+    def _make_dataloader(self, data):
+        return DataLoader(
+            data,
+            batch_size=self.batch_size,
+            shuffle=True,
+            collate_fn=self.collate_fn,
+            num_workers=2,
+            pin_memory=True
+        )
 
     def _set_optimizer(self, model):
         """
@@ -159,9 +135,11 @@ class Trainer:
         """
         epoch_loss = 0
         model.train()
-        for sample in self.train_dataloader:
+        for inputs, labels, weights in tqdm(self.train_dataloader):
             # Every data instance is an input + label pair
-            inputs, labels, weights = sample
+            inputs = inputs.to(self.device)
+            labels = labels.to(self.device)
+            weights = weights.to(self.device)
             # Zero your gradients for every batch!
             self.optimizer.zero_grad()
             # Make predictions for this batch
@@ -188,11 +166,14 @@ class Trainer:
         total_loss = 0
         model.eval()
         with torch.no_grad():
-            for sample in self.valid_dataloader:
-                x, y, weight = sample
-                guess = model(x)
-                loss = self.loss_fn(guess, y)
-                loss = (weight * loss).mean()
+            for inputs, labels, weights in tqdm(self.valid_dataloader):
+                # Every data instance is an input + label pair
+                inputs = inputs.to(self.device)
+                labels = labels.to(self.device)
+                weights = weights.to(self.device)
+                guess = model(inputs)
+                loss = self.loss_fn(guess, labels)
+                loss = (weights * loss).mean()
                 total_loss += loss.item()
         avg_loss = total_loss / len(self.valid_dataloader)
         return avg_loss
@@ -217,10 +198,7 @@ class Trainer:
         with tqdm(desc="Training in early stop mode", unit="epochs") as pbar:
             while True:
                 model = self.train_single_epoch(model)
-                if (
-                    self.validation_loss[-1]
-                    <= min(self.validation_loss) - self.threshold
-                ):
+                if self.validation_loss[-1] <= min(self.validation_loss):
                     best_model = model.state_dict()
                     bad_trains = 0
                 else:

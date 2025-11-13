@@ -6,9 +6,10 @@ meta_data:
   selection_cut: ((Signal_Fit) || (H_sideband) || (Z_sideband)) & (baseline)
 
 sample_list:
-  - DY
-  - TT
-  - EWK
-  - VV
-  - GluGluHto2Mu
-  - VBFHto2Mu
+  # - DY
+  # - TT
+  # - EWK
+  # - VV
+  # - GluGluHto2Mu
+  # - VBFHto2Mu
+  - data

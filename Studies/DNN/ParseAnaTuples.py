@@ -54,6 +54,7 @@ def process_datasets(period, group_name, group_data, global_config, meta_data, o
         output_filename = os.path.join(meta_data['output_folder'], period, f"{dataset_name}.root")
         pattern = os.path.join(meta_data['input_folder'], period, dataset_name, "*.root")
         filelist = glob(pattern)
+        print(filelist)
         rdf = ROOT.RDataFrame("Events", filelist)
         dfw = analysis.DataFrameBuilderForHistograms(rdf, global_config, period)
         dfw = analysis.PrepareDfForNNInputs(dfw)
@@ -99,7 +100,10 @@ if __name__ == '__main__':
         print(f"\n***** Starting Processing for Era: {period} *****")
         process_config = load_processes(period)
         for sample_type in config['sample_list']:
-            group_data = process_config[sample_type]
+            if sample_type == 'data':
+                group_data = {'datasets' : ['data']}
+            else:
+                group_data = process_config[sample_type]
             process_datasets(
                     period=period, 
                     group_name=sample_type, 
