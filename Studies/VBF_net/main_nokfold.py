@@ -92,7 +92,8 @@ if __name__ == "__main__":
     # Reduce datasize for a quick test
     if args.down_sample == 1:
         print("Downsampling DF (for fast test)")
-        _, df = train_test_split(df, test_size=0.25, stratify=df['process'])
+        _, df = train_test_split(df, test_size=0.05, stratify=df['process'])
+        df.reset_index(inplace=True)
 
 
     # Init the output directory
@@ -107,7 +108,6 @@ if __name__ == "__main__":
     base_dir = os.getcwd()
     print("Working dir:", base_dir)
 
-
     # Split data into train, test, validation
     print("Performing test/train/valid split...")
     temp_df, test_df = train_test_split(
@@ -116,6 +116,10 @@ if __name__ == "__main__":
     train_df, valid_df = train_test_split(
         temp_df, test_size=config["splitting"]["validation_size"], stratify=temp_df["process"]
     )
+
+    # For sanity checking
+    df.to_pickle("initial_full_df.pkl")
+    #test_df.to_pickle("initial_test_df.pkl")
 
 
     # Init the tester
@@ -161,5 +165,5 @@ if __name__ == "__main__":
     print("Saving final plots...")
     tester.testing_df.to_pickle("evaluated_testing_df.pkl")
     tester.make_hist()
-    tester.make_multihist()
+    tester.make_multihist(log=True)
     tester.make_roc_plot()

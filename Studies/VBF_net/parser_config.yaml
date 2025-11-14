@@ -1,0 +1,11 @@
+meta_data:
+  global_config: /afs/cern.ch/user/a/ayeagle/H_mumu/config/global.yaml
+  output_folder: /eos/user/a/ayeagle/H_mumu/root_files/v3_VBFNet_samples/
+  input_folder: /eos/user/v/vdamante/H_mumu/anaTuples/v3_10Nov_FixedAmcatNLOWeights
+
+sample_list:
+  # - DY
+  # - EWK
+  - GluGluHto2Mu
+  # - VBFHto2Mu
+

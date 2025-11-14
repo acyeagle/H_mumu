@@ -264,11 +264,23 @@ def VBFNetJetCollectionDef(df):
 
     df = df.Define(
         "VBFCandJet_selection", 
-        "Jet_NoOverlapWithMuons && Jet_pt > 25 && ((ROOT::VecOps::abs(Jet_eta) < 2.5) || (ROOT::VecOps::abs(Jet_eta) > 3.0) || (Jet_pt > 50));
+        "Jet_NoOverlapWithMuons && Jet_pt > 25 && ((ROOT::VecOps::abs(Jet_eta) < 2.5) || (ROOT::VecOps::abs(Jet_eta) > 3.0) || (Jet_pt > 50));"
     )
 
     df = df.Define(
         "FilteredJet_pt", "Jet_pt[VBFCandJet_selection]"
+    )
+    df = df.Define(
+        "FilteredJet_eta", "Jet_eta[VBFCandJet_selection]"
+    )
+    df = df.Define(
+        "FilteredJet_phi", "Jet_phi[VBFCandJet_selection]"
+    )
+    df = df.Define(
+        "FilteredJet_btagPNetQvG", "Jet_btagPNetQvG[VBFCandJet_selection]"
+    )
+    df = df.Define(
+        "FilteredJet_puIdDisc", "Jet_puIdDisc[VBFCandJet_selection]"
     )
 
     # and do the same for whatever other variables
@@ -818,10 +830,13 @@ def PrepareDfForVBFNetworkInputs(dfBuilder):
     #dfBuilder.RescaleXS()
     dfBuilder.defineChannels()
     dfBuilder.defineTriggers()
-    #dfBuilder.AddScaReOnBS()
+    dfBuilder.AddScaReOnBS()
     dfBuilder.df = GetMuMuObservables(dfBuilder.df)
     dfBuilder.df = GetMuMuMassResolution(dfBuilder.df)
     dfBuilder.df = VBFNetJetCollectionDef(dfBuilder.df)
+    dfBuilder.df = VBFJetSelection(dfBuilder.df)
+    dfBuilder.df = VBFJetMuonsObservables(dfBuilder.df)
     dfBuilder.SignRegionDef()
     dfBuilder.defineRegions()
+    dfBuilder.defineCategories()
     return dfBuilder

@@ -43,7 +43,6 @@ vars_to_save:
     - process
     - dataset
   Categories:
-    - Z_sideband
     - HasVBF
     - baseline
     # - baseline_Zmumu
@@ -55,6 +54,7 @@ vars_to_save:
     # - VBF_Zmumu
     # - VBF_Zmumu_JetVeto
   Regions:
+    - Z_sideband
     - Signal_ext
     - H_sideband
     - Signal_Fit

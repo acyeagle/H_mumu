@@ -15,6 +15,7 @@ class JetDataset(Dataset):
         self.eta = self.df["FilteredJet_eta"].values
         self.phi = self.df["FilteredJet_phi"].values
         self.label = self.df["Label"].values
+        self.indices = self.df.index.values
 
         if weight_col is not None:
             self.weight = self.df[weight_col].values
@@ -40,5 +41,6 @@ class JetDataset(Dataset):
         target = self.label[idx].reshape([1,])
         weight = self.weight[idx]
         if self.for_inference:
-            return data, idx
+            index = self.indices[idx]
+            return data, index
         return data, target, weight

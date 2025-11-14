@@ -10,3 +10,6 @@ AnaProd/tasks.py
 /output
 *.root
 /H_mumu/Studies/DNN/results
+/H_mumu/Studies/DY_weights/results
+/H_mumu/Studies/VBF_net/results
+
