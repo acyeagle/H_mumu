@@ -43,8 +43,8 @@ def get_arguments():
         "--down_sample",
         required=False,
         default=0,
-        type=int,
-        help="Downsample for testing (1/50)",
+        type=float,
+        help="Downsample for testing",
     )
 
     args = parser.parse_args()
@@ -55,7 +55,7 @@ def build_layer_list(config):
     # Modify layer_list to have input and output layers
     layer_list = config["network"]["layer_list"]
     # Look at the number of data columns
-    input_size = 3 * config["dataset"]["max_jets"]
+    input_size = 5 * config["dataset"]["max_jets"]
     config["network"]["layer_list"] = [input_size] + layer_list + [1]
     return config
 
@@ -90,9 +90,10 @@ if __name__ == "__main__":
     rl = RootLoader(args.rootfile, **config["dataset"])
     df = rl.load_to_dataframe()
     # Reduce datasize for a quick test
-    if args.down_sample == 1:
-        print("Downsampling DF (for fast test)")
-        _, df = train_test_split(df, test_size=0.05, stratify=df['process'])
+    if args.down_sample != 0:
+        print("Downsampling DF (for fast test):", args.down_sample)
+        df = df.sample(frac=1).reset_index(drop=True)
+        _, df = train_test_split(df, test_size=args.down_sample, stratify=df['process'])
         df.reset_index(inplace=True)
 
 
@@ -116,11 +117,6 @@ if __name__ == "__main__":
     train_df, valid_df = train_test_split(
         temp_df, test_size=config["splitting"]["validation_size"], stratify=temp_df["process"]
     )
-
-    # For sanity checking
-    df.to_pickle("initial_full_df.pkl")
-    #test_df.to_pickle("initial_test_df.pkl")
-
 
     # Init the tester
     print("Init'ing tester...")

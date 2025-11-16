@@ -8,12 +8,12 @@ signal_types = ['VBFHto2Mu', 'EWK']
 max_jets = 4
 
 [splitting]
-validation_size = 0.2
-k = 3
+validation_size = 0.25
+k = 4
 
 [network]  
 # Hidden layers only, input layer size pulled from the used columns
-layer_list = [24, 12, 6]
+layer_list = [24, 24, 12, 6]
 
 [training]
 batch_size = 100

@@ -14,7 +14,10 @@ class JetDataset(Dataset):
         self.pt = self.df["FilteredJet_pt"].values
         self.eta = self.df["FilteredJet_eta"].values
         self.phi = self.df["FilteredJet_phi"].values
-        self.label = self.df["Label"].values
+        self.btag = self.df["FilteredJet_btagPNetQvG"].values
+        self.puid = self.df["FilteredJet_puIdDisc"].values
+
+        self.label = self.df['Label'].values
         self.indices = self.df.index.values
 
         if weight_col is not None:
@@ -36,7 +39,9 @@ class JetDataset(Dataset):
         pt_pad = self.pad(self.pt[idx])
         eta_pad = self.pad(self.eta[idx])
         phi_pad = self.pad(self.phi[idx])
-        jets = np.stack([pt_pad, eta_pad, phi_pad], axis=1)
+        btag_pad = self.pad(self.btag[idx])
+        puid_pad = self.pad(self.puid[idx])
+        jets = np.stack([pt_pad, eta_pad, phi_pad, btag_pad, puid_pad], axis=1)
         data = ak.flatten(jets)
         target = self.label[idx].reshape([1,])
         weight = self.weight[idx]

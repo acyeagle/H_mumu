@@ -43,8 +43,8 @@ def get_arguments():
         "--down_sample",
         required=False,
         default=0,
-        type=int,
-        help="Downsample for testing (1/50)",
+        type=float,
+        help="Downsample for testing",
     )
 
     args = parser.parse_args()
@@ -55,7 +55,7 @@ def build_layer_list(config):
     # Modify layer_list to have input and output layers
     layer_list = config["network"]["layer_list"]
     # Look at the number of data columns
-    input_size = 3 * config["dataset"]["max_jets"]
+    input_size = 5 * config["dataset"]["max_jets"]
     config["network"]["layer_list"] = [input_size] + layer_list + [1]
     return config
 
@@ -90,9 +90,9 @@ if __name__ == "__main__":
     rl = RootLoader(args.rootfile, **config["dataset"])
     df = rl.load_to_dataframe()
     # Reduce datasize for a quick test
-    if args.down_sample == 1:
-        print("Downsampling DF to 1/50th the size (for fast test)")
-        df = df.sample(frac=1/50, ignore_index=True)
+    if args.down_sample != 0:
+        print(f"Downsampling DF to {args.down_sample} the size (for fast test)")
+        df = df.sample(frac=args.down_sample).reset_index()
 
     # Init the tester
     print("Init'ing tester...")
@@ -164,6 +164,6 @@ if __name__ == "__main__":
     # Save the final inference plots
     print("K-fold complete! Saving final plots...")
     tester.testing_df.to_pickle("evaluated_testing_df.pkl")
-    tester.make_hist()
-    tester.make_multihist()
+    tester.make_hist(log=True)
+    tester.make_multihist(log=True)
     tester.make_roc_plot()

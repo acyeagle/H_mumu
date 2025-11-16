@@ -4,8 +4,8 @@ meta_data:
   input_folder: /eos/user/v/vdamante/H_mumu/anaTuples/v3_10Nov_FixedAmcatNLOWeights
 
 sample_list:
-  # - DY
-  # - EWK
+  - DY
+  - EWK
   - GluGluHto2Mu
-  # - VBFHto2Mu
+  - VBFHto2Mu
 

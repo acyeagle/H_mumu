@@ -50,7 +50,10 @@ def process_datasets(period, group_name, group_data, global_config, meta_data, o
         output_filename = os.path.join(meta_data['output_folder'], period, f"{dataset_name}.root")
         pattern = os.path.join(meta_data['input_folder'], period, dataset_name, "*.root")
         filelist = glob(pattern)
-        print(filelist)
+        #print(filelist)
+        if not filelist:
+            print("******* WARNING: empty anaTuples:", dataset_name)
+            continue
         rdf = ROOT.RDataFrame("Events", filelist)
         dfw = analysis.DataFrameBuilderForHistograms(rdf, global_config, period)
         dfw = analysis.PrepareDfForVBFNetworkInputs(dfw)
