@@ -1,7 +1,7 @@
 meta_data:
   global_config: /afs/cern.ch/user/a/ayeagle/H_mumu/config/global.yaml
-  output_folder: /eos/user/a/ayeagle/H_mumu/root_files/v3_VBFNet_samples/
-  input_folder: /eos/user/v/vdamante/H_mumu/anaTuples/v3_10Nov_FixedAmcatNLOWeights
+  output_folder: /eos/user/a/ayeagle/H_mumu/root_files/v4_VBFNet_samples/
+  input_folder: /eos/user/e/eusebi/Hmumu/anaTuples/v4_20Nov_NewJetIDs_LooseMuons/
 
 sample_list:
   - DY

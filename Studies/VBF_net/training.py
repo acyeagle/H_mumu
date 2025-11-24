@@ -20,7 +20,6 @@ class Trainer:
         self,
         training_data,
         validation_data,
-        device,
         hyperparams,
         # The rest passed from config
         batch_size,
@@ -31,7 +30,6 @@ class Trainer:
         # Any config parameters specific for the optimizer
         self.hyperparams = hyperparams
         # Other passed params
-        self.device = device
         self.batch_size = batch_size
         self.epochs = epochs
         self.early_stop = early_stop
@@ -59,9 +57,8 @@ class Trainer:
             data,
             batch_size=self.batch_size,
             shuffle=True,
-            collate_fn=self.collate_fn,
-            num_workers=2,
-            pin_memory=True
+            # num_workers=2,
+            # pin_memory=True
         )
 
     def _set_optimizer(self, model):
@@ -136,10 +133,6 @@ class Trainer:
         epoch_loss = 0
         model.train()
         for inputs, labels, weights in tqdm(self.train_dataloader):
-            # Every data instance is an input + label pair
-            inputs = inputs.to(self.device)
-            labels = labels.to(self.device)
-            weights = weights.to(self.device)
             # Zero your gradients for every batch!
             self.optimizer.zero_grad()
             # Make predictions for this batch
@@ -168,9 +161,6 @@ class Trainer:
         with torch.no_grad():
             for inputs, labels, weights in tqdm(self.valid_dataloader):
                 # Every data instance is an input + label pair
-                inputs = inputs.to(self.device)
-                labels = labels.to(self.device)
-                weights = weights.to(self.device)
                 guess = model(inputs)
                 loss = self.loss_fn(guess, labels)
                 loss = (weights * loss).mean()

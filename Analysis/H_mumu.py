@@ -24,6 +24,9 @@ JetObservables = [
     "PNetRegPtRawCorr",
     "PNetRegPtRawCorrNeutrino",
     "PNetRegPtRawRes",
+    "UParTAK4RegPtRawCorr",
+    "UParTAK4RegPtRawCorrNeutrino",
+    "UParTAK4RegPtRawRes",
     "area",
     "btagDeepFlavB",
     "btagDeepFlavCvB",
@@ -35,12 +38,19 @@ JetObservables = [
     "btagPNetCvNotB",
     "btagPNetQvG",
     "btagPNetTauVJet",
+    "btagUParTAK4B",
+    "btagUParTAK4CvB",
+    "btagUParTAK4CvL",
+    "btagUParTAK4CvNotB",
+    "btagUParTAK4QvG",
+    "btagUParTAK4TauVJet",
     "chEmEF",
     "chHEF",
     "chMultiplicity",
     "electronIdx1",
     "electronIdx2",
     "eta",
+    "genJetIdx",
     "hfEmEF",
     "hfHEF",
     "hfadjacentEtaStripsSize",
@@ -60,12 +70,30 @@ JetObservables = [
     "neEmEF",
     "neHEF",
     "neMultiplicity",
-    "partonFlavour",
     "phi",
     "pt",
+    "puIdDisc",
+    "puId_beta",
+    "puId_dR2Mean",
+    "puId_frac01",
+    "puId_frac02",
+    "puId_frac03",
+    "puId_frac04",
+    "puId_jetR",
+    "puId_jetRchg",
+    "puId_majW",
+    "puId_minW",
+    "puId_nCharged",
+    "puId_ptD",
+    "puId_pull",
     "rawFactor",
     "svIdx1",
     "svIdx2",
+    "ptRes",
+    "vetoMap",
+    # "passJetIdTight",
+    # "passJetIdTightLepVeto",
+    # "isInsideVetoRegion"
 ]
 JetObservablesMC = ["hadronFlavour", "partonFlavour", "genJetIdx"]
 
@@ -267,21 +295,30 @@ def VBFNetJetCollectionDef(df):
         "Jet_NoOverlapWithMuons && Jet_pt > 25 && ((ROOT::VecOps::abs(Jet_eta) < 2.5) || (ROOT::VecOps::abs(Jet_eta) > 3.0) || (Jet_pt > 50));"
     )
 
-    df = df.Define(
-        "FilteredJet_pt", "Jet_pt[VBFCandJet_selection]"
-    )
-    df = df.Define(
-        "FilteredJet_eta", "Jet_eta[VBFCandJet_selection]"
-    )
-    df = df.Define(
-        "FilteredJet_phi", "Jet_phi[VBFCandJet_selection]"
-    )
-    df = df.Define(
-        "FilteredJet_btagPNetQvG", "Jet_btagPNetQvG[VBFCandJet_selection]"
-    )
-    df = df.Define(
-        "FilteredJet_puIdDisc", "Jet_puIdDisc[VBFCandJet_selection]"
-    )
+    # Add the desired variables
+
+    jet_vars = ['pt', 'eta', 'phi', 'btagPNetB', 'btagPNetCvB', 'btagPNetCvL', 'btagPNetCvNotB', 'btagPNetQvG', 'btagPNetTauVJet', 'puIdDisc']
+
+    for var in jet_vars:
+        df = df.Define(
+            f"FilteredJet_{var}", f"Jet_{var}[VBFCandJet_selection]"
+        )
+
+    # df = df.Define(
+    #     "FilteredJet_pt", "Jet_pt[VBFCandJet_selection]"
+    # )
+    # df = df.Define(
+    #     "FilteredJet_eta", "Jet_eta[VBFCandJet_selection]"
+    # )
+    # df = df.Define(
+    #     "FilteredJet_phi", "Jet_phi[VBFCandJet_selection]"
+    # )
+    # df = df.Define(
+    #     "FilteredJet_btagPNetQvG", "Jet_btagPNetQvG[VBFCandJet_selection]"
+    # )
+    # df = df.Define(
+    #     "FilteredJet_puIdDisc", "Jet_puIdDisc[VBFCandJet_selection]"
+    # )
 
     # and do the same for whatever other variables
     # Jet_btagPNetQvG 

@@ -11,6 +11,8 @@ import uproot
 import Analysis.H_mumu as analysis
 from FLAF.Common.Setup import Setup
 
+from columns_config import columns_config
+
 ROOT.gSystem.Load("libRIO")
 ROOT.gInterpreter.Declare('#include <string>')
 
@@ -77,25 +79,7 @@ if __name__ == '__main__':
     # Init from args and configs
     args = get_args()
     config, global_config  = load_configs(args.config)
-    output_columns = [
-        "FullEventId",
-        "isData",
-        "weight_MC_Lumi_pu",
-        "era",
-        "process",
-        "dataset",
-        "baseline",
-        "Signal_Fit",
-        "Signal_ext",
-        "H_sideband",
-        "Z_sideband",
-        "FilteredJet_pt",
-        "FilteredJet_eta",
-        "FilteredJet_phi",
-        "FilteredJet_btagPNetQvG",
-        "FilteredJet_puIdDisc"
-    ]
-
+    output_columns = columns_config['metadata'] + columns_config['flat_vars'] + columns_config['jet_vars']
 
     if args.period.lower() == 'all':
         eras = ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]
@@ -118,3 +102,16 @@ if __name__ == '__main__':
                     meta_data=config['meta_data'], 
                     output_columns=output_columns
                 )
+    # Run through outputs, delete empties
+    print("### Running over outputs, deleting empty root files...")
+    print("Switching to output dir:", config['meta_data']['output_folder'])
+    os.chdir(config['meta_data']['output_folder'])
+    filelist = glob('*/*.root')
+    for filename in filelist:
+        f = ROOT.TFile(filename)
+        tree = f.Get("Events")
+        count = tree.GetEntries()
+        print("\t", filename, count)
+        if count == 0:
+            print("\t\t REMOVING", filename)
+            os.remove(filename)

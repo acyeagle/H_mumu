@@ -25,46 +25,30 @@ class Tester:
     def __init__(
         self,
         testing_df,
-        device,
-        max_jets,
         n_bins=20,
         **kwargs,
     ):
         # Set self attrs
         self.testing_df = testing_df
-        self.device = device
-        self.max_jets = max_jets
         self.n_bins = n_bins
         # Other on-the-fly ones
         self.hist_range = (0, 1)
         self.batch_size=1000 
-
-    def collate_fn(self, batch):
-        x, y = zip(*batch)
-        x = torch.tensor(np.stack(x), dtype=torch.double, device=self.device)
-        #y = torch.tensor(np.stack(y), dtype=torch.double, device=self.device)
-        return x, y
 
     def _make_dataloader(self, data):
         return DataLoader(
             data,
             batch_size=self.batch_size,
             shuffle=False,
-            collate_fn=self.collate_fn,
-            num_workers=2,
+            # num_workers=2,
         )
 
-    def test(self, model, testing_idx):
+    def test(self, model, testing_data):
         """
         Run the inference, save to testing_df
         """
         #print("Testing indicies:", testing_idx)
-        if testing_idx is None:
-            selected = self.testing_df
-        else:
-            selected = self.testing_df.loc[testing_idx]
-        data = JetDataset(selected, None, self.max_jets, for_inference=True)
-        data = self._make_dataloader(data)
+        data = self._make_dataloader(testing_data)
         model.eval()
         with torch.no_grad():
             print("Running testing...")
@@ -90,7 +74,7 @@ class Tester:
         """
         Takes two np arrays. Precompute a histogram and pass the bins over here.
         """
-        x = (signal_bins) / np.sqrt(background_bins + signal_bins)
+        x = (signal_bins) / np.sqrt(background_bins)
         return np.sqrt(np.sum(x**2))
 
     ### PLOTTING ###
@@ -129,6 +113,12 @@ class Tester:
             )
         plt.stairs(*h2, label="Background", color="tab:orange")
         plt.stairs(*h1, label="Signal", color="tab:blue")
+        # Calc sensitivity
+        sig_counts, _ = h1
+        bkg_counts, _ = h2
+        sensitivity = self.s2overb(sig_counts, bkg_counts)
+        title = r"$\frac{S}{\sqrt{B}} = $" + str(round(sensitivity, 3))
+        plt.title(title)
         # Set plot parameters based on boolean options
         if log:
             plt.yscale("log")

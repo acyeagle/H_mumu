@@ -11,6 +11,7 @@ class JetDataset(Dataset):
         self.pad_value = pad_value
         self.for_inference = for_inference
 
+        self.mumu_pt = self.df['pt_mumu'].values
         self.pt = self.df["FilteredJet_pt"].values
         self.eta = self.df["FilteredJet_eta"].values
         self.phi = self.df["FilteredJet_phi"].values
@@ -36,6 +37,7 @@ class JetDataset(Dataset):
         return arr
 
     def __getitem__(self, idx):
+        mumu = self.mumu_pt[idx]
         pt_pad = self.pad(self.pt[idx])
         eta_pad = self.pad(self.eta[idx])
         phi_pad = self.pad(self.phi[idx])
@@ -43,6 +45,7 @@ class JetDataset(Dataset):
         puid_pad = self.pad(self.puid[idx])
         jets = np.stack([pt_pad, eta_pad, phi_pad, btag_pad, puid_pad], axis=1)
         data = ak.flatten(jets)
+        data = np.concatenate((mumu, data))
         target = self.label[idx].reshape([1,])
         weight = self.weight[idx]
         if self.for_inference:

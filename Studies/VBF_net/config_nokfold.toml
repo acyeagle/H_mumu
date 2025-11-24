@@ -6,28 +6,78 @@ use_cuda = true
 [dataset]
 signal_types = ['VBFHto2Mu', 'EWK']
 max_jets = 4
+data_columns = [
+    'pt_mumu', 
+    'nSoftActivityJet',
+    'SoftActivityJetHT', 
+    'SoftActivityJetHT2', 
+    'SoftActivityJetHT5',
+    'SoftActivityJetHT10', 
+    'SoftActivityJetNjets2', 
+    'SoftActivityJetNjets5',
+    'SoftActivityJetNjets10', 
+    'nJet', 
+    'FilteredJet_pt_1', 
+    'FilteredJet_pt_2', 
+    'FilteredJet_pt_3',
+    'FilteredJet_pt_4', 
+    'FilteredJet_eta_1', 
+    'FilteredJet_eta_2',
+    'FilteredJet_eta_3', 
+    'FilteredJet_eta_4', 
+    'FilteredJet_phi_1',
+    'FilteredJet_phi_2', 
+    'FilteredJet_phi_3', 
+    'FilteredJet_phi_4',
+    'FilteredJet_btagPNetB_1', 
+    'FilteredJet_btagPNetB_2',
+    'FilteredJet_btagPNetB_3', 
+    'FilteredJet_btagPNetB_4',
+    'FilteredJet_btagPNetCvB_1', 
+    'FilteredJet_btagPNetCvB_2',
+    'FilteredJet_btagPNetCvB_3', 
+    'FilteredJet_btagPNetCvB_4',
+    'FilteredJet_btagPNetCvL_1', 
+    'FilteredJet_btagPNetCvL_2',
+    'FilteredJet_btagPNetCvL_3', 
+    'FilteredJet_btagPNetCvL_4',
+    'FilteredJet_btagPNetCvNotB_1', 
+    'FilteredJet_btagPNetCvNotB_2',
+    'FilteredJet_btagPNetCvNotB_3', 
+    'FilteredJet_btagPNetCvNotB_4',
+    'FilteredJet_btagPNetQvG_1', 
+    'FilteredJet_btagPNetQvG_2',
+    'FilteredJet_btagPNetQvG_3', 
+    'FilteredJet_btagPNetQvG_4',
+    'FilteredJet_btagPNetTauVJet_1', 
+    'FilteredJet_btagPNetTauVJet_2',
+    'FilteredJet_btagPNetTauVJet_3', 
+    'FilteredJet_btagPNetTauVJet_4'
+]
 
 [splitting]
-validation_size = 0.25
+validation_size = 0.32
 testing_size = 0.40
 
 [network]  
 # Hidden layers only, input layer size pulled from the used columns
-layer_list = [40, 20, 10, 5]
+layer_list = [100, 100, 100, 100, 50, 50]
+batch_renorm = true
+dropout = 0.10
 
 [training]
-batch_size = 100
-epochs = 25
+batch_size = 1000
+epochs = 50
 early_stop = false
 patience = 20
 
 [optimizer]
 algo = "Adam"   # Currently, SGD and Adam are supported
-lr = 0.001
+lr = 0.0001
 weight_decay = 0.0
 
 [testing]
 # Number of bins for all histograms
-n_bins = 12
+n_bins = 30
 
 

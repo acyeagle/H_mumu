@@ -55,7 +55,8 @@ def build_layer_list(config):
     # Modify layer_list to have input and output layers
     layer_list = config["network"]["layer_list"]
     # Look at the number of data columns
-    input_size = 5 * config["dataset"]["max_jets"]
+    input_size = 5 * config["dataset"]["max_jets"] + 1
+    print(input_size)
     config["network"]["layer_list"] = [input_size] + layer_list + [1]
     return config
 

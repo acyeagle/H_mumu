@@ -1,20 +1,20 @@
-import uproot
+import pandas as pd
 import numpy as np
 
 
-class RootLoader:
+class PandasLoader:
 
-    def __init__(self, rootfile, signal_types, equalize_for_training=True, **kwargs):
+    def __init__(self, filepath, signal_types, equalize_for_training=True, **kwargs):
         self.signal_types = signal_types
-        self.rootfile = rootfile
+        self.filepath = filepath
         self.equalize_for_training = equalize_for_training
 
     ### Private helper funcs ###
 
-    def _load_rootfile(self, rootfile):
-        with uproot.open(rootfile + ":Events") as tree:
-            df = tree.arrays(library="pd")
-        df["process"] = df.process.astype(str)
+    def _load_file(self, filepath):
+        df = pd.read_pickle(filepath)
+        for col in ['era', 'process', 'dataset']:
+            df[col] = df[col].astype(str)
         return df
 
     def _add_labels(self, df):
@@ -43,17 +43,10 @@ class RootLoader:
         df["Training_Weight"] *= scale
         return df
 
-    def pad_and_decompose(self, df, column, max_values, pad_value=0):
-        arr = df[column].values
-        arr_padded = ak.fill_none(ak.pad_none(arr, max_values, clip=True), pad_value)
-        for i in range(max_values):
-            df[f'{column}_{i+1}'] = arr_np[:,i]
-        return df
-
     ### Main function ###
 
     def load_to_dataframe(self):
-        df = self._load_rootfile(self.rootfile)
+        df = self._load_file(self.filepath)
         df = self._add_labels(df)
         df = self._set_class_weight(df)
         df = self._set_training_weight(df)
