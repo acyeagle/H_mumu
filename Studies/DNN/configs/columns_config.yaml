@@ -43,6 +43,10 @@ vars_to_save:
     - process
     - dataset
   Categories:
+<<<<<<< HEAD
+=======
+    - Z_sideband
+>>>>>>> 153e55f0caef832bc63aeb82cffd83904ab74c0a
     - HasVBF
     - baseline
     # - baseline_Zmumu
@@ -54,7 +58,10 @@ vars_to_save:
     # - VBF_Zmumu
     # - VBF_Zmumu_JetVeto
   Regions:
+<<<<<<< HEAD
     - Z_sideband
+=======
+>>>>>>> 153e55f0caef832bc63aeb82cffd83904ab74c0a
     - Signal_ext
     - H_sideband
     - Signal_Fit
@@ -76,10 +83,18 @@ vars_to_save:
     # - weight_mu2_MuonID_SF_LoosePFIsoCentral
     # - weight_mu2_MuonID_SF_MediumIDLoosePFIsoCentral
     # - weight_mu2_MuonID_SF_MediumID_TrkCentral
+<<<<<<< HEAD
     #- weight_trigSF_singleMu
+=======
+    # - weight_trigSF_singleMu
+>>>>>>> 153e55f0caef832bc63aeb82cffd83904ab74c0a
     - weight_MC_Lumi_pu
     # - weight_EWKCorr_VptCentral
     # - weight_DYw_DYWeightCentral
     - m_mumu_resolution
     # - weight_EWKCorr_ewcorrCentral
+<<<<<<< HEAD
     #- final_weight
+=======
+    # - final_weight
+>>>>>>> 153e55f0caef832bc63aeb82cffd83904ab74c0a

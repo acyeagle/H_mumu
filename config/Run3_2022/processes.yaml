@@ -1,86 +1,33 @@
 ############## DY ##############
 DY:
   name: "DY 012 jets"
+  name: "DY 012 jets"
   cross_section_correction: 12/ 11  # NLO -> NNLO
   color: "kAzure+7"
+  color_mplhep: lightskyblue
   color_mplhep: lightskyblue
   datasets:
     - DYto2E_M_50_0J_amcatnloFXFX
     - DYto2Mu_M_50_0J_amcatnloFXFX
+    # - DYto2Tau_M_50_0J_Filtered_amcatnloFXFX
     - DYto2Tau_M_50_0J_amcatnloFXFX
     - DYto2E_M_50_1J_amcatnloFXFX
     - DYto2Mu_M_50_1J_amcatnloFXFX
+    # - DYto2Tau_M_50_1J_Filtered_amcatnloFXFX
     - DYto2Tau_M_50_1J_amcatnloFXFX
     - DYto2E_M_50_2J_amcatnloFXFX
     - DYto2Mu_M_50_2J_amcatnloFXFX
+    # - DYto2Tau_M_50_2J_Filtered_amcatnloFXFX
     - DYto2Tau_M_50_2J_amcatnloFXFX
 
-# DY_inclusive:
-#   name: "DY m50 incl"
-#   color:
-#   color_mplhep:
-#   datasets:
-#     - DYto2L_M_50_amcatnloFXFX
-
-DY_mll_bin:
-  name: "DY mll bin "
+DY_mll_105To160:
+  name: "DY mll 105 to 160 "
   cross_section_correction: 12/ 11  # NLO -> NNLO
   color: "kAzure+7"
   color_mplhep: lightskyblue
   datasets:
-    - DYto2E_MLL_10to50_powheg
-    - DYto2E_MLL_50to120_powheg
-    - DYto2E_MLL_120to200_powheg
-    - DYto2E_MLL_200to400_powheg
-    - DYto2E_MLL_400to800_powheg
-    - DYto2E_MLL_800to1500_powheg
-    - DYto2E_MLL_1500to2500_powheg
-    - DYto2E_MLL_2500to4000_powheg
-    - DYto2E_MLL_4000to6000_powheg
-    - DYto2E_MLL_6000_powheg
-    - DYto2Mu_MLL_10to50_powheg
-    - DYto2Mu_MLL_50to120_powheg
-    - DYto2Mu_MLL_120to200_powheg
-    - DYto2Mu_MLL_200to400_powheg
-    - DYto2Mu_MLL_400to800_powheg
-    - DYto2Mu_MLL_800to1500_powheg
-    - DYto2Mu_MLL_1500to2500_powheg
-    - DYto2Mu_MLL_2500to4000_powheg
-    - DYto2Mu_MLL_4000to6000_powheg
-    - DYto2Mu_MLL_6000_powheg
-    - DYto2Tau_MLL_10to50_powheg
-    - DYto2Tau_MLL_50to120_powheg
-    - DYto2Tau_MLL_120to200_powheg
-    - DYto2Tau_MLL_200to400_powheg
-    - DYto2Tau_MLL_400to800_powheg
-    - DYto2Tau_MLL_800to1500_powheg
-    - DYto2Tau_MLL_1500to2500_powheg
-    - DYto2Tau_MLL_2500to4000_powheg
-    - DYto2Tau_MLL_4000to6000_powheg
-    - DYto2Tau_MLL_6000_powheg
+    - DYto2Mu_MLL_105to160_amcatnloFXFX
 
-DY_amcatnloFXFX:
-  name: "DY amcatnloFXFX"
-  # cross_section_correction: 12/ 11  # NLO -> NNLO
-  color: kAzure-9
-  color_mplhep: lightskyblue
-  datasets:
-    - DYto2E_M_50_amcatnloFXFX
-    # - DYto2E_M_50_amcatnloFXFX_ext1
-    - DYto2Mu_M_50_amcatnloFXFX
-    # - DYto2Mu_M_50_amcatnloFXFX_ext1
-    - DYto2Tau_M_50_amcatnloFXFX
-    # - DYto2Tau_M_50_amcatnloFXFX_ext1
-
-
-DYToMuMu_amcatnloFXFX:
-  name: "DY M50"
-  # cross_section_correction: 12/ 11  # NLO -> NNLO
-  color: kAzure-9
-  color_mplhep: lightskyblue
-  datasets:
-    - DYto2Mu_M_50_amcatnloFXFX
-    # - DYto2Mu_M_50_amcatnloFXFX_ext1
 
 DYToMuMu_MiNNLO:
   name: "DY $\\rightarrow \\ell \\ell$ + jets"
@@ -137,7 +84,7 @@ W_NJets:
 EWK_LLJJ:
   name: "EWK"
   color: kMagenta+3
-  color_mplhep: aqua
+  color_mplhep: darkmagenta
   datasets:
     - LLJJ_SM_M-50_MJJ120_13p6TeV_dipole
     # - LLJJ_SM_M-50_MJJ120_13p6TeV_dipole_ext1
@@ -145,7 +92,7 @@ EWK_LLJJ:
 EWK:
   name: "EWK"
   color: kMagenta+3
-  color_mplhep: aqua
+  color_mplhep: darkmagenta
   datasets:
     - EWK_2L2J_madgraph_herwig
 
@@ -161,27 +108,27 @@ EWK_LLJJ_herwig:
 EWK_LLJJ_M105_160:
   name: "EWK"
   color: kMagenta+3
-  color_mplhep: aqua
+  color_mplhep: darkmagenta
   datasets:
     - LLJJ_SM_M105-160_MJJ120_13p6TeV_dipole
-    # - LLJJ_SM_M105-160_MJJ120_13p6TeV_dipole_ext1
-    # - LLJJ_SM_M105-160_MJJ120_13p6TeV_dipole_ext2
+    - LLJJ_SM_M105-160_MJJ120_13p6TeV_dipole_ext1
+    - LLJJ_SM_M105-160_MJJ120_13p6TeV_dipole_ext2
 
 EWK_LLJJ_M105_160_VBFFilter:
   name: "EWK"
   color: kMagenta+3
-  color_mplhep: aqua
+  color_mplhep: darkmagenta
   datasets:
     - LLJJ_SM_M105-160_MJJ120_13p6TeV_dipole_vbffilter
-    # - LLJJ_SM_M105-160_MJJ120_13p6TeV_dipole_vbffilter_ext1
-    # - LLJJ_SM_M105-160_MJJ120_13p6TeV_dipole_vbffilter_ext2
-    # - LLJJ_SM_M105-160_MJJ120_13p6TeV_dipole_vbffilter_ext3
-    # - LLJJ_SM_M105-160_MJJ120_13p6TeV_dipole_vbffilter_ext4
-    # - LLJJ_SM_M105-160_MJJ120_13p6TeV_dipole_vbffilter_ext5
-    # - LLJJ_SM_M105-160_MJJ120_13p6TeV_dipole_vbffilter_ext6
-    # - LLJJ_SM_M105-160_MJJ120_13p6TeV_dipole_vbffilter_ext7
-    # - LLJJ_SM_M105-160_MJJ120_13p6TeV_dipole_vbffilter_ext8
-    # - LLJJ_SM_M105-160_MJJ120_13p6TeV_dipole_vbffilter_ext9
+    - LLJJ_SM_M105-160_MJJ120_13p6TeV_dipole_vbffilter_ext1
+    - LLJJ_SM_M105-160_MJJ120_13p6TeV_dipole_vbffilter_ext2
+    - LLJJ_SM_M105-160_MJJ120_13p6TeV_dipole_vbffilter_ext3
+    - LLJJ_SM_M105-160_MJJ120_13p6TeV_dipole_vbffilter_ext4
+    - LLJJ_SM_M105-160_MJJ120_13p6TeV_dipole_vbffilter_ext5
+    - LLJJ_SM_M105-160_MJJ120_13p6TeV_dipole_vbffilter_ext6
+    - LLJJ_SM_M105-160_MJJ120_13p6TeV_dipole_vbffilter_ext7
+    - LLJJ_SM_M105-160_MJJ120_13p6TeV_dipole_vbffilter_ext8
+    - LLJJ_SM_M105-160_MJJ120_13p6TeV_dipole_vbffilter_ext9
 
 ############## Other single H  ##############
 H_mainBckg:
@@ -200,7 +147,7 @@ H_mainBckg:
 VV_Inclusive:
   name: "VV Inclusive"
   color: kPink+2
-  color_mplhep: violet
+  color_mplhep: tomato
   datasets:
     - WW
     - WZ
@@ -209,7 +156,7 @@ VV_Inclusive:
 VV:
   name: "VV"
   color: kPink+2
-  color_mplhep: violet
+  color_mplhep: tomato
   datasets:
     - WWto2L2Nu_powheg
     - WWto4Q_powheg
@@ -241,7 +188,7 @@ VH_inclusive:
 VVV:
   name: "VVV"
   color: kOrange-4
-  color_mplhep: mediumvioletred
+  color_mplhep: plum
   datasets:
     - WWW_4F
     - WWZ_4F
@@ -252,7 +199,7 @@ VVV:
 ST:
   name: "ST"
   color: kCyan-1
-  color_mplhep: bisque
+  color_mplhep: cyan
   datasets:
     - TbarBtoLminusNuB_s_channel_4FS
     - TBbartoLplusNuBbar_s_channel_4FS
@@ -264,7 +211,7 @@ ST:
 TW:
   name: "TW"
   color: kCyan-1
-  color_mplhep: darkorange
+  color_mplhep: green
   datasets:
     - TWminusto2L2Nu
     - TWminusto4Q

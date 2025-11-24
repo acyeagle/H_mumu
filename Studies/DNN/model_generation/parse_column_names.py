@@ -2,7 +2,7 @@ from itertools import chain
 from pprint import pprint
 
 
-def parse_column_names(config, column_type="all", print_columns=False):
+def parse_column_names(config, column_type="all"):
     """
     Takes a config file specifying which columns to save in the NN sample sets.
     Generally this would be ds_setup/general.yaml.
@@ -63,13 +63,12 @@ def parse_column_names(config, column_type="all", print_columns=False):
     header_columns = list(chain.from_iterable(header_columns))
     selection_columns = list(chain.from_iterable(selection_columns))
 
-    if print_columns:
-        print("Data columns:")
-        pprint(data_columns)
-        print("Header columns:")
-        pprint(header_columns)
-        print("Selection columns:")
-        pprint(selection_columns)
+    print("Data columns:")
+    pprint(data_columns)
+    print("Header columns:")
+    pprint(header_columns)
+    print("Selection columns:")
+    pprint(selection_columns)
 
     if column_type == "all":
         return header_columns + selection_columns + data_columns

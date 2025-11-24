@@ -1,6 +1,10 @@
 #include <boost/math/special_functions/erf.hpp>
 #pragma once
+<<<<<<< HEAD
 struct CrystalBall {
+=======
+struct CrystalBallScaRe {
+>>>>>>> 153e55f0caef832bc63aeb82cffd83904ab74c0a
     double pi = 3.14159;
     double sqrtPiOver2 = sqrt(pi / 2.0);
     double sqrt2 = sqrt(2.0);
@@ -20,8 +24,13 @@ struct CrystalBall {
     double k;
     double cdfMa;
     double cdfPa;
+<<<<<<< HEAD
     CrystalBall() : m(0), s(1), a(10), n(10) { init(); }
     CrystalBall(double mean, double sigma, double alpha, double n) : m(mean), s(sigma), a(alpha), n(n) { init(); }
+=======
+    CrystalBallScaRe() : m(0), s(1), a(10), n(10) { init(); }
+    CrystalBallScaRe(double mean, double sigma, double alpha, double n) : m(mean), s(sigma), a(alpha), n(n) { init(); }
+>>>>>>> 153e55f0caef832bc63aeb82cffd83904ab74c0a
     void init() {
         double fa = fabs(a);
         double ex = exp(-fa * fa / 2);
@@ -82,7 +91,11 @@ double get_rndm(double eta, float nL) {
     double alpha = cset->at("cb_params")->evaluate({abs(eta), nL, 3});
 
     // instantiate CB and get random number following the CB
+<<<<<<< HEAD
     CrystalBall cb(mean, sigma, alpha, n);
+=======
+    CrystalBallScaRe cb(mean, sigma, alpha, n);
+>>>>>>> 153e55f0caef832bc63aeb82cffd83904ab74c0a
     TRandom3 rnd(time(0));
     double rndm = gRandom->Rndm();
     return cb.invcdf(rndm);

@@ -8,3 +8,10 @@ lumi_text:
 
 channel_text:
   'muMu': '#mu#mu'
+
+customregion_text:
+  'Z_sideband': 'Z SideBand'
+  'Signal_Fit': 'Signal Fit'
+  'H_sideband': 'H SideBand'
+  'Signal_ext': 'Signal extension'
+  'mass_inclusive': 'Inclusive'

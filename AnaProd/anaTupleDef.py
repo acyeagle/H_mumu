@@ -33,6 +33,7 @@ Muon_observables = [
     "fsrPhotonIdx",
     "genPartFlav",
     "genPartIdx",
+    "genMatchIdx",
     "highPtId",
     "highPurity",
     "inTimeMuon",
@@ -231,6 +232,10 @@ JetObservables = [
     "svIdx2",
     "ptRes",
     "vetoMap",
+    "vetoMapEle",
+    "passJetIdTight",
+    "passJetIdTightLepVeto",
+    "isInsideVetoRegion"
 ]
 
 JetObservablesMC = ["hadronFlavour", "partonFlavour"]
@@ -329,21 +334,23 @@ def addAllVariables(
     applyTriggerFilter,
     global_params,
     channels,
+    sample_name
 ):
-
     dfw.Apply(AnaBaseline.LeptonVeto)
 
-    dfw.Apply(AnaBaseline.RecoHttCandidateSelection, global_params)
+    # dfw.Apply(AnaBaseline.RecoHttCandidateSelection, global_params)
 
+    # dfw.Apply(AnaBaseline.JetSelection, global_params["era"])
     # dfw.Apply(AnaBaseline.JetSelection, global_params["era"])
 
     dfw.Apply(Corrections.getGlobal().jet.getEnergyResolution)
 
     dfw.Apply(Corrections.getGlobal().JetVetoMap.GetJetVetoMap)
 
-    dfw.Apply(CommonBaseline.ApplyJetVetoMap, apply_filter=False)
+    isV12 = (sample_name == "VBFHto2Mu_M-125_13p6TeV_powheg-herwig7" or sample_name== "VBFHto2Mu_M-125_13p6TeV_powheg-herwig7_ext1" or sample_name=="VBFHto2Mu_M-125_13p6TeV_powheg-herwig7_ext2")
+    dfw.Apply(CommonBaseline.ApplyJetVetoMap, apply_filter=False,isV12=isV12)
 
-    dfw.Apply(AnaBaseline.GetMuMuCandidate)
+    # dfw.Apply(AnaBaseline.GetMuMuCandidate)
 
     n_legs = 2
 
@@ -358,9 +365,9 @@ def addAllVariables(
             default=0,
         ):
             cond = var_cond
-            if check_leg_type:
-                type_cond = f"HttCandidate.leg_type[{leg_idx}] != Leg::none"
-                cond = f"{type_cond} && ({cond})" if cond else type_cond
+            # if check_leg_type:
+            #     type_cond = f"HttCandidate.leg_type[{leg_idx}] != Leg::none"
+            #     cond = f"{type_cond} && ({cond})" if cond else type_cond
             define_expr = (
                 f"static_cast<{var_type}>({var_expr})" if var_type else var_expr
             )
@@ -368,29 +375,29 @@ def addAllVariables(
                 define_expr = f"{cond} ? ({define_expr}) : {default}"
             dfw.DefineAndAppend(f"mu{leg_idx+1}_{var_name}", define_expr)
 
-        LegVar("legType", f"HttCandidate.leg_type[{leg_idx}]", check_leg_type=False)
+        # LegVar("legType", f"HttCandidate.leg_type[{leg_idx}]", check_leg_type=False)
+        LegVar("legType", f"Leg::mu", check_leg_type=False)
         for var in ["pt", "eta", "phi", "mass"]:
             LegVar(
                 var,
-                f"HttCandidate.leg_p4[{leg_idx}].{var}()",
+                f"Muon_p4[mu{leg_idx+1}_idx].{var}()",
                 var_type="float",
-                default="-1.f",
+                default="-1000.f",
             )
         # fix: add muon index:
 
         LegVar(
             f"index",
-            f"HttCandidate.leg_index[{leg_idx}]",
+            f"Muon_idx[mu{leg_idx+1}_idx]",
             var_type="int",
             default="-1",
         )
 
-        LegVar("charge", f"HttCandidate.leg_charge[{leg_idx}]", var_type="int")
+        LegVar("charge", f"Muon_charge[mu{leg_idx+1}_idx]", var_type="int")
         LegVar(
             f"pt_nano",
-            f"static_cast<float>(Muon_p4_nano.at(HttCandidate.leg_index[{leg_idx}]).pt())",
+            f"static_cast<float>(Muon_p4_nano.at(mu{leg_idx+1}_idx).pt())",
         )
-        LegVar("iso", f"HttCandidate.leg_rawIso.at({leg_idx})")
 
         for muon_obs in Muon_observables:
             if f"mu{leg_idx+1}_{muon_obs}" in dfw.df.GetColumnNames():
@@ -400,15 +407,15 @@ def addAllVariables(
 
             LegVar(
                 muon_obs,
-                f"Muon_{muon_obs}.at(HttCandidate.leg_index[{leg_idx}])",
-                var_cond=f"HttCandidate.leg_type[{leg_idx}] == Leg::mu",
-                default="-1.f",
+                f"Muon_{muon_obs}.at(mu{leg_idx+1}_idx)",
+                # var_cond=f"HttCandidate.leg_type[{leg_idx}] == Leg::mu",
+                default="-100000.f",
             )
         if not isData:
-            dfw.Define(
-                f"mu{leg_idx+1}_genMatchIdx",
-                f"HttCandidate.leg_type[{leg_idx}] != Leg::none ? HttCandidate.leg_genMatchIdx[{leg_idx}] : -1",
-            )
+            # dfw.Define(
+            #     f"mu{leg_idx+1}_genMatchIdx",
+            #     f"HttCandidate.leg_type[{leg_idx}] != Leg::none ? HttCandidate.leg_genMatchIdx[{leg_idx}] : -1",
+            # )
             LegVar(
                 "gen_kind",
                 f"genLeptons.at(mu{leg_idx+1}_genMatchIdx).kind()",
@@ -423,35 +430,50 @@ def addAllVariables(
                 var_cond=f"mu{leg_idx+1}_genMatchIdx>=0",
                 default="-10",
             )
+        else:
+            # dfw.Define(
+            #     f"mu{leg_idx+1}_genMatchIdx",
+            #     f"-1",
+            # )
+            LegVar(
+                "gen_kind",
+                f"-1",
+                var_type="int",
+                default="-10",
+            )
+            LegVar(
+                "gen_charge",
+                f"-10",
+                var_type="int",
+                default="-10",
+            )
         dfw.Define(
             f"mu{leg_idx+1}_p4",
-            f"HttCandidate.leg_type.size() > {leg_idx} ? HttCandidate.leg_p4.at({leg_idx}) : LorentzVectorM()",
+            f"Muon_p4.at(mu{leg_idx+1}_idx)",
         )
         dfw.Define(
             f"mu{leg_idx+1}_p4_nano",
-            f"Muon_p4_nano.at(HttCandidate.leg_index[{leg_idx}])",
-        )
-        # dfw.Define(
-        #     f"mu{leg_idx+1}_index",
-        #     f"HttCandidate.leg_type.size() > {leg_idx} ? HttCandidate.leg_index.at({leg_idx}) : -1",
-        # )
-        dfw.Define(
-            f"mu{leg_idx+1}_type",
-            f"HttCandidate.leg_type.size() > {leg_idx} ? static_cast<int>(HttCandidate.leg_type.at({leg_idx})) : -1",
+            f"Muon_p4_nano.at(mu{leg_idx+1}_idx)",
         )
     jet_obs_names = []
+    for jvar in ["pt","eta","phi","mass"]:
+        jet_obs_name = f"Jet_{jvar}"
+        if f"{jet_obs_name}" in dfw.df.GetColumnNames():
+            dfw.DefineAndAppend(f"{jet_obs_name}_nano",jet_obs_name)
+
+    if not isData:
+        JetObservables.extend(JetObservablesMC)
     for jetobs in JetObservables + ["idx"]:
         jet_obs_name = f"Jet_{jetobs}"
         if jet_obs_name in dfw.df.GetColumnNames():
             jet_obs_names.append(jet_obs_name)
-            # dfw.DefineAndAppend(f"SelectedJet_{jetobs}", f"Jet_{jetobs}")
     dfw.colToSave.extend(jet_obs_names)
     for recoObsNew in (
         PUObservables
         + FSRPhotonObservables
         + SoftActivityJetObservables
         + additional_VBFStudies_vars
-    ):  # additional_VBFStudies_vars+
+    ):
         if recoObsNew in dfw.df.GetColumnNames():
             dfw.colToSave.extend([recoObsNew])
 

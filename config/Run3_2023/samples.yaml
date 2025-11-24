@@ -75,3 +75,10 @@ ZH_Hto2Mu_ZtoAll:
   sampleType: VH
   crossSection: ZH_Hto2Mu_ZtoAll
   generator: powheg
+
+DYto2Mu_MLL_105to160_amcatnloFXFX:
+  crossSection: DYto2Mu_MLL_105to160_amcatnloFXFX
+  crossSectionStitch: DYto2Mu_MLL_105to160_amcatnloFXFX
+  generator: amcatnlo
+  miniAOD: /DYto2Mu_MLL_105to160_amcatnloFXFX/Run3Summer22MiniAODv4-130X_mcRun3_2022_realistic_v5-v1/MINIAODSIM
+  sampleType: DY

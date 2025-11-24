@@ -18,7 +18,6 @@ from FLAF.Common.Utilities import DeclareHeader
 
 
 class DNNProducer:
-
     def __init__(self, cfg, payload_name):
         print("DNN Producer init!")
         # cfg is H_mumu/configs/global.yaml
@@ -36,7 +35,6 @@ class DNNProducer:
         ]
         self.models = self._load_models()
 
-
     ### Init helpers ###
 
     def _load_framework(self):
@@ -47,7 +45,7 @@ class DNNProducer:
             "include/HmumuCore.h",
             "FLAF/include/AnalysisTools.h",
             "FLAF/include/AnalysisMath.h",
-            "FLAF/include/HistHelper.h"
+            "FLAF/include/HistHelper.h",
         ]:
             DeclareHeader(os.environ["ANALYSIS_PATH"] + "/" + header)
 
@@ -88,7 +86,6 @@ class DNNProducer:
             columns_config["vars_to_save"], column_type="data"
         )
         return parity, input_features
-
 
     ### Functions for running the inference ###
 

@@ -37,6 +37,7 @@ page_setup:
     - ana_text
     - cat_text
     - ch_text
+    - customreg_text
   text_boxes_mplhep:
     - cms_label
     # - category_label
@@ -117,7 +118,7 @@ datasim_text:
 
 cat_text:
   pos_ref: datasim_text
-  pos: [ 0.05, -0.079 ]
+  pos: [ 0.05, -0.08 ]
   text_size: 0.026
   font: 62
 
@@ -125,6 +126,12 @@ ch_text:
   pos_ref: datasim_text
   pos: [ 0.01, -0.08 ]
   text_size: 0.026
+  font: 62
+
+customreg_text:
+  pos_ref: datasim_text
+  pos: [ 0.24, -0.8 ]
+  text_size: 0.020
   font: 62
 
 bkg_hist:

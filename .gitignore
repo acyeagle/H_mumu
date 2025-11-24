@@ -8,8 +8,12 @@ __pycache__
 AnaProd/tasks.py
 *.txt
 /output
+Analysis/fits
+Analysis/plotting_tools
+Analysis/schemaV2_VXBS.json
+Analysis/yield_calculator/
+Studies/FSRRecovery/
 *.root
 /H_mumu/Studies/DNN/results
 /H_mumu/Studies/DY_weights/results
 /H_mumu/Studies/VBF_net/results
-

@@ -5,8 +5,8 @@ phys_model: BaseModel
 signal_types:
   - ggH
   - VBFH
-  # - ttH
-  # - VH
+#  - ttH
+#  - VH
 
 storeFatJets: False
 bjet_preselection_branch: "Jet_B0"
@@ -31,12 +31,67 @@ custom_regions: MuMuMassRegions
 custom_categories: ""
 custom_subcategories: [ ]
 
-# further_cuts:
-#   etamm_0p9: ["eta_mumu","abs(eta_mumu) < 0.9"]
-#   etamm_1p4: ["eta_mumu","abs(eta_mumu) >= 0.9 && abs(eta_mumu) < 1.4"]
-#   etamm_2p4: ["eta_mumu","abs(eta_mumu) >= 1.4 && abs(eta_mumu) < 2.4"]
-#   etamm_above2p4: ["eta_mumu","abs(eta_mumu) > 2.4"]
-#   eta_incl: ["eta_mumu","abs(eta_mumu) >= 0."]
+further_cuts: {}
+#  etamm_0p9: ["eta_mumu","abs(eta_mumu) < 0.9"]
+#  etamm_1p4: ["eta_mumu","abs(eta_mumu) >= 0.9 && abs(eta_mumu) < 1.4"]
+#  etamm_2p4: ["eta_mumu","abs(eta_mumu) >= 1.4 && abs(eta_mumu) < 2.4"]
+#  etamm_above2p4: ["eta_mumu","abs(eta_mumu) > 2.4"]
+#  inclusive: [["eta_mumu"],"abs(eta_mumu) >= 0."]
+#  # Inclusive
+#  inclusive_BB: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 0. && abs(mu1_eta)<0.9 && abs(mu2_eta)<0.9"]
+#  inclusive_BO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 0. && abs(mu1_eta)<0.9 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
+#  inclusive_BE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 0. && abs(mu1_eta)<0.9 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
+#  inclusive_OB: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 0. && abs(mu1_eta)>=0.9 && abs(mu1_eta)<1.8 && abs(mu2_eta)<0.9"]
+#  inclusive_OO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 0. && abs(mu1_eta)>=0.9 && abs(mu1_eta)<1.8 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
+#  inclusive_OE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 0. && abs(mu1_eta)>=0.9 && abs(mu1_eta)<1.8 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
+#  inclusive_EB: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 0. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)<0.9"]
+#  inclusive_EO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 0. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
+#  inclusive_EE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 0. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
+
+# #  # pT < 45
+#  leading_mu_pt_45_BB: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt < 45. && abs(mu1_eta)<0.9 && abs(mu2_eta)<0.9"]
+#  leading_mu_pt_45_BO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt < 45. && abs(mu1_eta)<0.9 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
+#  leading_mu_pt_45_BE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt < 45. && abs(mu1_eta)<0.9 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
+#  leading_mu_pt_45_OB: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt < 45. && abs(mu1_eta)>=0.9 && abs(mu1_eta)<1.8 && abs(mu2_eta)<0.9"]
+#  leading_mu_pt_45_OO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt < 45. && abs(mu1_eta)>=0.9 && abs(mu1_eta)<1.8 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
+#  leading_mu_pt_45_OE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt < 45. && abs(mu1_eta)>=0.9 && abs(mu1_eta)<1.8 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
+#  leading_mu_pt_45_EB: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt < 45. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)<0.9"]
+#  leading_mu_pt_45_EO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt < 45. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
+#  leading_mu_pt_45_EE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt < 45. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
+
+ # 45 ≤ pT < 52
+#  leading_mu_pt_52_BB: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 45. && mu1_pt < 52. && abs(mu1_eta)<0.9 && abs(mu2_eta)<0.9"]
+#  leading_mu_pt_52_BO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 45. && mu1_pt < 52. && abs(mu1_eta)<0.9 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
+#  leading_mu_pt_52_BE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 45. && mu1_pt < 52. && abs(mu1_eta)<0.9 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
+#  leading_mu_pt_52_OB: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 45. && mu1_pt < 52. && abs(mu1_eta)>=0.9 && abs(mu1_eta)<1.8 && abs(mu2_eta)<0.9"]
+#  leading_mu_pt_52_OO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 45. && mu1_pt < 52. && abs(mu1_eta)>=0.9 && abs(mu1_eta)<1.8 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
+#  leading_mu_pt_52_OE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 45. && mu1_pt < 52. && abs(mu1_eta)>=0.9 && abs(mu1_eta)<1.8 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
+#  leading_mu_pt_52_EB: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 45. && mu1_pt < 52. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)<0.9"]
+#  leading_mu_pt_52_EO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 45. && mu1_pt < 52. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
+#  leading_mu_pt_52_EE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 45. && mu1_pt < 52. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
+
+#  # 52 ≤ pT < 62
+#  leading_mu_pt_62_BB: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 52. && mu1_pt < 62. && abs(mu1_eta)<0.9 && abs(mu2_eta)<0.9"]
+#  leading_mu_pt_62_BO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 52. && mu1_pt < 62. && abs(mu1_eta)<0.9 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
+#  leading_mu_pt_62_BE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 52. && mu1_pt < 62. && abs(mu1_eta)<0.9 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
+#  leading_mu_pt_62_OB: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 52. && mu1_pt < 62. && abs(mu1_eta)>=0.9 && abs(mu1_eta)<1.8 && abs(mu2_eta)<0.9"]
+#  leading_mu_pt_62_OO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 52. && mu1_pt < 62. && abs(mu1_eta)>=0.9 && abs(mu1_eta)<1.8 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
+#  leading_mu_pt_62_OE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 52. && mu1_pt < 62. && abs(mu1_eta)>=0.9 && abs(mu1_eta)<1.8 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
+#  leading_mu_pt_62_EB: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 52. && mu1_pt < 62. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)<0.9"]
+#  leading_mu_pt_62_EO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 52. && mu1_pt < 62. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
+#  leading_mu_pt_62_EE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 52. && mu1_pt < 62. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
+
+# #  # pT ≥ 62
+#  leading_mu_pt_up_BB: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 62. && abs(mu1_eta)<0.9 && abs(mu2_eta)<0.9"]
+#  leading_mu_pt_up_BO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 62. && abs(mu1_eta)<0.9 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
+#  leading_mu_pt_up_BE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 62. && abs(mu1_eta)<0.9 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
+#  leading_mu_pt_up_OB: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 62. && abs(mu1_eta)>=0.9 && abs(mu1_eta)<1.8 && abs(mu2_eta)<0.9"]
+#  leading_mu_pt_up_OO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 62. && abs(mu1_eta)>=0.9 && abs(mu1_eta)<1.8 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
+#  leading_mu_pt_up_OE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 62. && abs(mu1_eta)>=0.9 && abs(mu1_eta)<1.8 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
+#  leading_mu_pt_up_EB: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 62. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)<0.9"]
+#  leading_mu_pt_up_EO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 62. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
+#  leading_mu_pt_up_EE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 62. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
+
 
 MuMuMassRegions:  ### ALL same w.r.t. Run 2 ###
   Z_sideband: "m_mumu > 70 && m_mumu < 110"
@@ -52,59 +107,116 @@ hist_triggers:
     default: (HLT_singleMu)
 
 singleMu_th:
-  "Run2_2016": 26
-  "Run2_2016_HIPM": 26
-  "Run2_2017": 29
-  "Run2_2018": 26
-  "Run3_2022": 26
-  "Run3_2022EE": 26
-  "Run3_2023": 26
-  "Run3_2023BPix": 26
+  Run2_2016: 26
+  Run2_2016_HIPM: 26
+  Run2_2017: 29
+  Run2_2018: 26
+  Run3_2022: 26
+  Run3_2022EE: 26
+  Run3_2023: 26
+  Run3_2023BPix: 26
 
 categories:
   - no_cuts
   - OS_sel
   - trigger_sel
-  - baseline
-  # - JetTagSel_deepJet_sel
-  # - JetTagSel_def_sel
+  - baseline_muonJet
   - VBF_def
   - VBF
-  - ggH
   - VBF_JetVeto
-  # - VBF_deepJet
-  # - VBF_JetVeto_deepJet
-  # - ggH_deepJet
+  - ggH
+
 
 
 category_definition:
-  #### COMPARISON WITH RUN 2 ####
-  # the baseline selection requires OS -- > Opposite Sign of muons charge (as in Run2, obv), and either the first or the second muon matching the online object and passing the pT threshold driven by the trigger (which is always 26 GeV in Run3 up to now) -- See AN/2019_185 lines 123 - 130
   no_cuts: "true"
-  OS_sel: "OS"
+  baseline_WPIso: "mu1_pfRelIso04_all < 0.25 &&  mu2_pfRelIso04_all< 0.25 && mu1_mediumId && mu2_mediumId"
+  OS_sel: "baseline_WPIso && OS"
   trigger_sel: "( (mu1_pt > {MuPtTh} && mu1_HasMatching_singleMu) || (mu2_pt > {MuPtTh} && mu2_HasMatching_singleMu) )"
-  baseline: "OS_sel && trigger_sel &&  abs(mu1_dz) < 1. && abs(mu1_dxy) < 0.5 && abs(mu2_dz) < 1. && abs(mu2_dxy) < 0.5"
-  # JetTagSel_deepJet_sel: "baseline && JetTagSel_deepJet"
-  JetTagSel_def_sel: "baseline && JetTagSel"
-  #### COMPARISON WITH RUN 2 ####
-  # VBF category and def is the same w.r.t run 2
-  VBF_def: "JetTagSel_def_sel && HasVBF"
+  baseline_muonJet: "OS_sel && trigger_sel && JetTagSel" # &&  abs(mu1_dz) < 1. && abs(mu1_dxy) < 0.5 && abs(mu2_dz) < 1. && abs(mu2_dxy) < 0.5"
+  VBF_def: "baseline_muonJet && HasVBF"
   VBF: "VBF_def && j1_pt >= 35 && j2_pt >= 25 "
-  # ggH category is "just" not ttH and VBF. There are no other exclusions w.r.t other channels.
-  ggH: "JetTagSel_def_sel && !(VBF)"
-  #### COMPARISON WITH RUN 2 ####
-  # VBF category and def is the same w.r.t run 2
-  # VBF_def_deepJet: "JetTagSel_deepJet_sel && HasVBF"
-  # VBF_deepJet: "VBF_def_deepJet && j1_pt >= 35 && j2_pt >= 25 "
-  # ggH category is "just" not ttH and VBF. There are no other exclusions w.r.t other channels.
-  # ggH_deepJet: "JetTagSel_deepJet_sel && !(VBF)"
-  # This is only introduced for Run3 jet horn issue!!
-  # https://gitlab.cern.ch/cms-jetmet/coordination/coordination/-/issues/113 --> data/MC differences in Jet distributions
-  # spikes are pT dependent, increasing the pT threshold to 50 GeV let them disappear, but reduces significantly the analysis sensitivity
-  # non-physics dependent, but related to Jet Energy Correction and Scale
   HornJetVeto_def: "((abs(j1_eta) < 2.5 || abs(j1_eta) > 3 || j1_pt > 50) && (abs(j2_eta) < 2.5 || abs(j2_eta) > 3 || j2_pt > 50))"
   VBF_JetVeto: "VBF && HornJetVeto_def"
-  # VBF_JetVeto_deepJet: "VBF_deepJet && HornJetVeto_def"
+  ggH: "baseline_muonJet && !(VBF_JetVeto)"
+
+  # trigger_sel_ScaRe: "( (mu1_pt > {MuPtTh} && mu1_HasMatching_singleMu) || (mu2_pt > {MuPtTh} && mu2_HasMatching_singleMu) )"
+  # baseline_muonJet_ScaRe: "OS_sel && trigger_sel_ScaRe && JetTagSel" # &&  abs(mu1_dz) < 1. && abs(mu1_dxy) < 0.5 && abs(mu2_dz) < 1. && abs(mu2_dxy) < 0.5"
+  # VBF_def_ScaRe: "baseline_muonJet_ScaRe && HasVBF"
+  # VBF_ScaRe: "VBF_def_ScaRe && j1_pt >= 35 && j2_pt >= 25 "
+  # VBF_JetVeto_ScaRe: "VBF_ScaRe && HornJetVeto_def"
+  # ggH_ScaRe: "baseline_muonJet_ScaRe && !(VBF_JetVeto_ScaRe)"
+
+  # trigger_sel_ScaRe_reapplied: "( (mu1_pt_reapplied_pt_1_corr > {MuPtTh} && mu1_HasMatching_singleMu) || (mu2_pt_reapplied_pt_1_corr > {MuPtTh} && mu2_HasMatching_singleMu) )"
+  # baseline_muonJet_ScaRe_reapplied: "OS_sel && trigger_sel_ScaRe_reapplied && JetTagSel" # &&  abs(mu1_dz) < 1. && abs(mu1_dxy) < 0.5 && abs(mu2_dz) < 1. && abs(mu2_dxy) < 0.5"
+  # VBF_def_ScaRe_reapplied: "baseline_muonJet_ScaRe_reapplied && HasVBF"
+  # VBF_ScaRe_reapplied: "VBF_def_ScaRe_reapplied && j1_pt >= 35 && j2_pt >= 25 "
+  # VBF_JetVeto_ScaRe_reapplied: "VBF_ScaRe_reapplied && HornJetVeto_def"
+  # ggH_ScaRe_reapplied: "baseline_muonJet_ScaRe_reapplied && !(VBF_JetVeto_ScaRe_reapplied)"
+
+  # trigger_sel_nano: "( (mu1_pt_nano > {MuPtTh} && mu1_HasMatching_singleMu) || (mu2_pt_nano > {MuPtTh} && mu2_HasMatching_singleMu) )"
+  # baseline_muonJet_nano: "OS_sel && trigger_sel_nano && JetTagSel" # &&  abs(mu1_dz) < 1. && abs(mu1_dxy) < 0.5 && abs(mu2_dz) < 1. && abs(mu2_dxy) < 0.5"
+  # VBF_def_nano: "baseline_muonJet_nano && HasVBF"
+  # VBF_nano: "VBF_def_nano && j1_pt >= 35 && j2_pt >= 25 "
+  # VBF_JetVeto_nano: "VBF_nano && HornJetVeto_def"
+  # ggH_nano: "baseline_muonJet_nano && !(VBF_JetVeto_nano)"
+
+  # trigger_sel_BS: "( (mu1_bsConstrainedPt > {MuPtTh} && mu1_HasMatching_singleMu) || (mu2_bsConstrainedPt > {MuPtTh} && mu2_HasMatching_singleMu) )"
+  # baseline_muonJet_BS: "OS_sel && trigger_sel_BS && JetTagSel" # &&  abs(mu1_dz) < 1. && abs(mu1_dxy) < 0.5 && abs(mu2_dz) < 1. && abs(mu2_dxy) < 0.5"
+  # VBF_def_BS: "baseline_muonJet_BS && HasVBF"
+  # VBF_BS: "VBF_def_BS && j1_pt >= 35 && j2_pt >= 25 "
+  # VBF_JetVeto_BS: "VBF_BS && HornJetVeto_def"
+  # ggH_BS: "baseline_muonJet_BS && !(VBF_JetVeto_BS)"
+
+  # trigger_sel_BS_ScaRe: "( (mu1_BS_pt_1_corr > {MuPtTh} && mu1_HasMatching_singleMu) || (mu2_BS_pt_1_corr > {MuPtTh} && mu2_HasMatching_singleMu) )"
+  # baseline_muonJet_BS_ScaRe: "OS_sel && trigger_sel_BS_ScaRe && JetTagSel" # &&  abs(mu1_dz) < 1. && abs(mu1_dxy) < 0.5 && abs(mu2_dz) < 1. && abs(mu2_dxy) < 0.5"
+  # VBF_def_BS_ScaRe: "baseline_muonJet_BS_ScaRe && HasVBF"
+  # VBF_BS_ScaRe: "VBF_def_BS_ScaRe && j1_pt >= 35 && j2_pt >= 25 "
+  # VBF_JetVeto_BS_ScaRe: "VBF_BS_ScaRe && HornJetVeto_def"
+  # ggH_BS_ScaRe: "baseline_muonJet_BS_ScaRe && !(VBF_JetVeto_BS_ScaRe)"
+
+  # trigger_sel_RoccoR: "( (mu1_RoccoR_pt > {MuPtTh} && mu1_HasMatching_singleMu) || (mu2_RoccoR_pt > {MuPtTh} && mu2_HasMatching_singleMu) )"
+  # baseline_muonJet_RoccoR: "OS_sel && trigger_sel_RoccoR && JetTagSel" # &&  abs(mu1_dz) < 1. && abs(mu1_dxy) < 0.5 && abs(mu2_dz) < 1. && abs(mu2_dxy) < 0.5"
+  # VBF_def_RoccoR: "baseline_muonJet_RoccoR && HasVBF"
+  # VBF_RoccoR: "VBF_def_RoccoR && j1_pt >= 35 && j2_pt >= 25 "
+  # VBF_JetVeto_RoccoR: "VBF_RoccoR && HornJetVeto_def"
+  # ggH_RoccoR: "baseline_muonJet_RoccoR && !(VBF_JetVeto_RoccoR)"
+
+  # trigger_sel_BS_RoccoR: "( (mu1_BS_RoccoR_pt > {MuPtTh} && mu1_HasMatching_singleMu) || (mu2_BS_RoccoR_pt > {MuPtTh} && mu2_HasMatching_singleMu) )"
+  # baseline_muonJet_BS_RoccoR: "OS_sel && trigger_sel_BS_RoccoR && JetTagSel" # &&  abs(mu1_dz) < 1. && abs(mu1_dxy) < 0.5 && abs(mu2_dz) < 1. && abs(mu2_dxy) < 0.5"
+  # VBF_def_BS_RoccoR: "baseline_muonJet_BS_RoccoR && HasVBF"
+  # VBF_BS_RoccoR: "VBF_def_BS_RoccoR && j1_pt >= 35 && j2_pt >= 25 "
+  # VBF_JetVeto_BS_RoccoR: "VBF_BS_RoccoR && HornJetVeto_def"
+  # ggH_BS_RoccoR: "baseline_muonJet_BS_RoccoR && !(VBF_JetVeto_BS_RoccoR)"
+
+
+
+
+# category_definition:
+#   #### COMPARISON WITH RUN 2 ####
+#   #  the baseline selection requires OS -- > Opposite Sign of muons charge (as in Run2, obv), and either the first or the second muon matching the online object and passing the pT threshold driven by the trigger (which is always 26 GeV in Run3 up to now) -- See AN/2019_185 lines 123 - 130
+#   no_cuts: "true"
+#   OS_sel: "OS"
+
+#   trigger_sel: "( (mu1_pt > {MuPtTh} && mu1_HasMatching_singleMu) || (mu2_pt > {MuPtTh} && mu2_HasMatching_singleMu) )"
+#   baseline_muon: "OS_sel && trigger_sel &&  abs(mu1_dz) < 1. && abs(mu1_dxy) < 0.5 && abs(mu2_dz) < 1. && abs(mu2_dxy) < 0.5"
+#   baseline_MuonPOG: "baseline_muon && mu1_pfRelIso04_all < 0.15 && mu1_pfIsoId >=4 && mu2_pfIsoId >= 4 && mu2_pfRelIso04_all< 0.15 && mu1_tightId && mu2_tightId && mu1_pt > 26 && mu2_pt>26"
+#   baseline_muonJet: "baseline_muon && JetTagSel"
+#   #### COMPARISON WITH RUN 2 ####
+#   #  VBF category and def is the same w.r.t run 2
+#   VBF_def: "baseline_muonJet && HasVBF"
+#   VBF: "VBF_def && j1_pt >= 35 && j2_pt >= 25 "
+#   #  ggH category is "just" not ttH and VBF. There are no other exclusions w.r.t other channels.
+#   ggH: "baseline_muonJet && !(VBF)"
+#   #### COMPARISON WITH RUN 2 ####
+#   #  VBF category and def is the same w.r.t run 2
+#   #  ggH category is "just" not ttH and VBF. There are no other exclusions w.r.t other channels.
+#   #  This is only introduced for Run3 jet horn issue!!
+#   #  https://gitlab.cern.ch/cms-jetmet/coordination/coordination/-/issues/113 --> data/MC differences in Jet distributions
+#   #  spikes are pT dependent, increasing the pT threshold to 50 GeV let them disappear, but reduces significantly the analysis sensitivity
+#   #  non-physics dependent, but related to Jet Energy Correction and Scale
+#   HornJetVeto_def: "((abs(j1_eta) < 2.5 || abs(j1_eta) > 3 || j1_pt > 50) && (abs(j2_eta) < 2.5 || abs(j2_eta) > 3 || j2_pt > 50))"
+#   VBF_JetVeto: "VBF && HornJetVeto_def"
 
 # DIFFERENCES WITH RUN2:
 # - muon baseline pT cut (before requiring eventual matching to the trigger object) 20 --> 10 GeV
@@ -119,12 +231,12 @@ corrections:
   - JEC
   - Jet_horns_fix
   - JER
-  - trgSF
-  # - btagWP
-  - mu
-  - Vpt
   - pu
   - muScaRe
+  # - trgSF
+  #  - btagWP
+  # - mu
+  # - Vpt
 
 scales:
   - Up
@@ -149,10 +261,9 @@ payload_producers:
     producer_name: DNNProducer
     columns:
       - NNOutput
-    dependencies:
-    # - DoubleLepHME
     n_cpus: 4
     max_runtime: 2.0
     cmssw_env: False
     awkward_based: True
     uproot_stepsize: '50MB'
+    dependencies: [ ]

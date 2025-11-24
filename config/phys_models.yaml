@@ -2,41 +2,14 @@ BaseModel:
   name: "Base Model"
   backgrounds:
     - DY
-    # - DY_mll_bin
-    # - DYToMuMu_M105-180_MiNNLO
-    # - DYToMuMu_MiNNLO # but it has wrong XS
+    - DY_mll_105To160
     - TT
     - VV
     - EWK
-    - EWK_LLJJ
+    # - EWK_LLJJ
     # - EWK_LLJJ_herwig
     # - EWK_LLJJ_M105_160
     # - EWK_LLJJ_M105_160_VBFFilter
-    - W_NJets
-    - ST
-    - TW
-    - VVV
-    - TTX
-    - H_mainBckg
-    - TTH_inclusive
-    - VH_inclusive
-  signals:
-    - VBFHto2Mu
-    - VBFHto2Mu_Herwig
-    - GluGluHto2Mu
-  data:
-    - Data_Muon
-
-
-BaseModel_2022EE:
-  name: "Base Model"
-  backgrounds:
-    - DY
-    - DY_mll_bin
-    - DY_amcatnloFXFX
-    - TT
-    - VV
-    - EWK
     - W_NJets
     - ST
     - TW

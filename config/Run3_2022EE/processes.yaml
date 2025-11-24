@@ -7,15 +7,26 @@ DY:
   datasets:
     - DYto2E_M_50_0J_amcatnloFXFX
     - DYto2Mu_M_50_0J_amcatnloFXFX
-    - DYto2Tau_M_50_0J_Filtered_amcatnloFXFX #DYto2Tau_M_50_0J_amcatnloFXFX
+    # - DYto2Tau_M_50_0J_Filtered_amcatnloFXFX
+    - DYto2Tau_M_50_0J_amcatnloFXFX
     - DYto2E_M_50_1J_amcatnloFXFX
     - DYto2Mu_M_50_1J_amcatnloFXFX
-    - DYto2Tau_M_50_1J_Filtered_amcatnloFXFX #DYto2Tau_M_50_1J_amcatnloFXFX
+    # - DYto2Tau_M_50_1J_Filtered_amcatnloFXFX
+    - DYto2Tau_M_50_1J_amcatnloFXFX
     - DYto2E_M_50_2J_amcatnloFXFX
     - DYto2Mu_M_50_2J_amcatnloFXFX
-    - DYto2Tau_M_50_2J_Filtered_amcatnloFXFX #DYto2Tau_M_50_2J_amcatnloFXFX
+    # - DYto2Tau_M_50_2J_Filtered_amcatnloFXFX
+    - DYto2Tau_M_50_2J_amcatnloFXFX
 
 
+
+DY_mll_105To160:
+  name: "DY mll 105 to 160 "
+  cross_section_correction: 12/ 11  # NLO -> NNLO
+  color: "kAzure+7"
+  color_mplhep: lightskyblue
+  datasets:
+    - DYto2Mu_MLL_105to160_amcatnloFXFX
 ############## TT ##############
 TT:
   name: "t $\\bar{t}$"
@@ -56,7 +67,7 @@ EWK_LLJJ:
   name: "EWK"
   color: kMagenta+3
   color_mplhep: darkmagenta
-  datasets: []
+  datasets: [ ]
 
 EWK:
   name: "EWK"
@@ -69,19 +80,19 @@ EWK_LLJJ_herwig:
   name: "EWK"
   color: kMagenta+3
   color_mplhep: darkmagenta
-  datasets: []
+  datasets: [ ]
 
 EWK_LLJJ_M105_160:
   name: "EWK"
   color: kMagenta+3
   color_mplhep: darkmagenta
-  datasets: []
+  datasets: [ ]
 
 EWK_LLJJ_M105_160_VBFFilter:
   name: "EWK"
   color: kMagenta+3
   color_mplhep: darkmagenta
-  datasets: []
+  datasets: [ ]
 
 ############## Other single H  ##############
 H_mainBckg:
@@ -153,7 +164,7 @@ VVV:
 ST:
   name: "ST"
   color: kCyan-1
-  color_mplhep: green
+  color_mplhep: cyan
   datasets:
     - TbarBtoLminusNuB_s_channel_4FS
     - TBbartoLplusNuBbar_s_channel_4FS
@@ -200,7 +211,7 @@ VBFHto2Mu_Herwig:
   name: "VBFHto2Mu_Herwig"
   color: "kPink"
   color_mplhep: fuchsia
-  datasets: []
+  datasets: [ ]
 #     - VBFHto2Mu_M-125_13p6TeV_powheg-herwig7
 #     # - VBFHto2Mu_M-125_13p6TeV_powheg-herwig7_ext1
 #     # - VBFHto2Mu_M-125_13p6TeV_powheg-herwig7_ext2
