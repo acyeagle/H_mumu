@@ -2,12 +2,15 @@ vars_to_save:
   Muon:
     - mu{}_eta
     - mu{}_pt
-  # SoftJet:
-  #   - Et # transverse energy
-  #   - HtCh_fraction # hadronic transverse energy fraction from charged particles
-  #   - HtHF_fraction # hadronic transverse energy fraction in the HF calorimeter
-  #   - HtNe_fraction # hadronic transverse energy fraction from neutral particles
-  #   - energy
+  SoftJet:
+    - nSoftActivityJet
+    - SoftActivityJetHT
+    - SoftActivityJetHT2
+    - SoftActivityJetHT5
+    - SoftActivityJetHT10
+    - SoftActivityJetNjets2
+    - SoftActivityJetNjets5
+    - SoftActivityJetNjets10
   VBFJet: # j1 and j2, separated in eta ecc.. in VBF events (single jet observables)
     - eta
     - pt
@@ -16,6 +19,7 @@ vars_to_save:
     - m_jj
     - delta_eta_jj
     - pt_jj
+    - nJet
   MuJet:
     - R_pt
     # - minDeltaEta
@@ -43,12 +47,8 @@ vars_to_save:
     - process
     - dataset
   Categories:
-<<<<<<< HEAD
-=======
-    - Z_sideband
->>>>>>> 153e55f0caef832bc63aeb82cffd83904ab74c0a
     - HasVBF
-    - baseline
+    - baseline_muonJet
     # - baseline_Zmumu
     - ggH
     # - ggH_Zmumu
@@ -58,10 +58,7 @@ vars_to_save:
     # - VBF_Zmumu
     # - VBF_Zmumu_JetVeto
   Regions:
-<<<<<<< HEAD
     - Z_sideband
-=======
->>>>>>> 153e55f0caef832bc63aeb82cffd83904ab74c0a
     - Signal_ext
     - H_sideband
     - Signal_Fit
@@ -83,18 +80,10 @@ vars_to_save:
     # - weight_mu2_MuonID_SF_LoosePFIsoCentral
     # - weight_mu2_MuonID_SF_MediumIDLoosePFIsoCentral
     # - weight_mu2_MuonID_SF_MediumID_TrkCentral
-<<<<<<< HEAD
-    #- weight_trigSF_singleMu
-=======
     # - weight_trigSF_singleMu
->>>>>>> 153e55f0caef832bc63aeb82cffd83904ab74c0a
     - weight_MC_Lumi_pu
     # - weight_EWKCorr_VptCentral
     # - weight_DYw_DYWeightCentral
     - m_mumu_resolution
     # - weight_EWKCorr_ewcorrCentral
-<<<<<<< HEAD
-    #- final_weight
-=======
-    # - final_weight
->>>>>>> 153e55f0caef832bc63aeb82cffd83904ab74c0a
+    - final_weight

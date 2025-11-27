@@ -7,7 +7,7 @@ columns_config = {
         "era",
         "process",
         "dataset",
-        "baseline",
+        "baseline_muonJet",
         "Signal_Fit",
         "Signal_ext",
         "H_sideband",

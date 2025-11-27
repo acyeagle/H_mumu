@@ -39,11 +39,12 @@ def load_processes(period):
 def load_configs(config_file):
     with open(config_file, "r") as f:
         config_dict = yaml.safe_load(f)
-    with open(config_dict["meta_data"]["global_config"], "r") as f:
-        global_config = yaml.safe_load(f)
+    # with open(config_dict["meta_data"]["global_config"], "r") as f:
+    #     global_config = yaml.safe_load(f)
     with open(config_dict["meta_data"]["columns_config"], "r") as f:
         columns_config = yaml.safe_load(f)
-    return config_dict, global_config, columns_config
+    #return config_dict, global_config, columns_config
+    return config_dict, columns_config
 
 
 def process_datasets(period, group_name, group_data, global_config, meta_data, output_columns):        
@@ -70,26 +71,17 @@ def process_datasets(period, group_name, group_data, global_config, meta_data, o
         #save_column_names = ROOT.std.vector("string")(output_columns)
         rdf.Snapshot("Events", output_filename, output_columns)
         del rdf
- 
+
 
 if __name__ == '__main__':
 
     # Init from args and configs
     args = get_args()
-    config, global_config, columns_config = load_configs(args.config)
+    #config, global_config, columns_config = load_configs(args.config)
+    config, columns_config = load_configs(args.config)
     output_columns = parse_column_names(
         columns_config["vars_to_save"], column_type="all"
     )
-
-    # Update the columns to save
-    # Add metadata columns
-    # output_columns.append('dataset')
-    # output_columns.append('process')
-    # output_columns.append('era')
-    # Add them jets!
-    output_columns.append("Jet_pt")
-    output_columns.append("Jet_eta")
-    output_columns.append("Jet_phi")
 
     if args.period.lower() == 'all':
         eras = ["Run3_2022", "Run3_2022EE", "Run3_2023", "Run3_2023BPix"]
@@ -99,7 +91,10 @@ if __name__ == '__main__':
     for period in eras:
         print(f"\n***** Starting Processing for Era: {period} *****")
         process_config = load_processes(period)
+        setup = Setup.getGlobal(os.environ["ANALYSIS_PATH"], period, "")
+        global_config = setup.global_params
         for sample_type in config['sample_list']:
+            global_config['process_name'] = sample_type
             if sample_type == 'data':
                 group_data = {'datasets' : ['data']}
             else:
