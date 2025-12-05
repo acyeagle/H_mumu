@@ -4,10 +4,12 @@ import numpy as np
 
 class PandasLoader:
 
-    def __init__(self, filepath, signal_types, equalize_for_training=True, **kwargs):
+    def __init__(self, filepath, signal_types, data_columns, abs_train_weight=True, equalize_for_training=True, **kwargs):
         self.signal_types = signal_types
+        self.abs_train_weight = abs_train_weight
         self.filepath = filepath
         self.equalize_for_training = equalize_for_training
+        self.data_columns = data_columns
 
     ### Private helper funcs ###
 
@@ -22,12 +24,13 @@ class PandasLoader:
         return df
 
     def _set_class_weight(self, df):
-        df["Class_Weight"] = df.weight_MC_Lumi_pu.copy()
+        df["Class_Weight"] = df.final_weight.copy()
         return df
 
     def _set_training_weight(self, df, norm=True):
         train_weights = df.Class_Weight.values.copy()
-        train_weights = np.abs(train_weights)
+        if self.abs_train_weight:
+            train_weights = np.abs(train_weights)
         df["Training_Weight"] = train_weights
         return df
 
@@ -42,6 +45,31 @@ class PandasLoader:
         scale[mask] = bkg_weight / sig_weight
         df["Training_Weight"] *= scale
         return df
+
+    ### Other external ###
+
+    def renorm_inputs(self, df, mean=None, std=None):
+        """
+        Applies a gaussian renorm to the variable columns
+        in self.data_columns
+        """
+        # Calc per variable m & s if not given
+        if mean is None and std is None:
+            mean = np.zeros(len(self.data_columns))
+            std = np.zeros(len(self.data_columns))
+            for i, col in enumerate(self.data_columns):
+                m = np.mean(df[col].values)
+                s = np.std(df[col].values)
+                mean[i] = m
+                std[i] = s
+        # Apply (x-m)/s renorm
+        for i, col in enumerate(self.data_columns):
+            m = mean[i]
+            s = std[i]
+            df[col] = df[col].apply(lambda x: (x-m)/s)
+        return df, (mean, std)
+
+
 
     ### Main function ###
 

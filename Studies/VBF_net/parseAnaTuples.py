@@ -58,6 +58,8 @@ def process_datasets(period, group_name, group_data, global_config, meta_data, o
             continue
         rdf = ROOT.RDataFrame("Events", filelist)
         dfw = analysis.DataFrameBuilderForHistograms(rdf, global_config, period)
+        if group_name == 'data':
+            dfw.isData = True
         dfw = analysis.PrepareDfForVBFNetworkInputs(dfw)
         rdf = dfw.df
         # Add a column defining the specific dataset name
@@ -66,11 +68,20 @@ def process_datasets(period, group_name, group_data, global_config, meta_data, o
         rdf = rdf.Define("process", f'(std::string)"{group_name}"')
         rdf = rdf.Define("era", f'(std::string)"{period}"')
         # Do selection/filtering
-        rdf = rdf.Filter("baseline")
+        print("Initial:", rdf.Count().GetValue())
+        print("\t", rdf.Sum('final_weight').GetValue())
+        rdf = rdf.Filter("baseline_muonJet")
+        print("After baseline:", rdf.Count().GetValue())
+        print("\t", rdf.Sum('final_weight').GetValue())
+        rdf = rdf.Filter("Z_sideband")
+        print("Then in Z peak:", rdf.Count().GetValue())
+        print("\t", rdf.Sum('final_weight').GetValue())
         rdf = rdf.Filter("FilteredJet_pt.size() >= 2")
+        print("Then after jet filtering:", rdf.Count().GetValue())
+        print("\t", rdf.Sum('final_weight').GetValue())
         # Save the result
         #save_column_names = ROOT.std.vector("string")(output_columns)
-        rdf.Snapshot("Events", output_filename, output_columns)
+        #rdf.Snapshot("Events", output_filename, output_columns)
         del rdf
  
 
@@ -89,7 +100,10 @@ if __name__ == '__main__':
     for period in eras:
         print(f"\n***** Starting Processing for Era: {period} *****")
         process_config = load_processes(period)
+        setup = Setup.getGlobal(os.environ["ANALYSIS_PATH"], period, "")
+        global_config = setup.global_params
         for sample_type in config['sample_list']:
+            global_config['process_name'] = sample_type
             if sample_type == 'data':
                 group_data = {'datasets' : ['data']}
             else:

@@ -25,7 +25,7 @@ def parse_column_names(config, column_type="all"):
     SoftJet_vars = []
     try:
         for SJvar in config["SoftJet"]:
-            SoftJet_vars.append(f"SoftJet_{SJvar}")
+            SoftJet_vars.append(SJvar)
     except KeyError:
         pass
 

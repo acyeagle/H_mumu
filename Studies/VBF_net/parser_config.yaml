@@ -1,11 +1,18 @@
 meta_data:
   global_config: /afs/cern.ch/user/a/ayeagle/H_mumu/config/global.yaml
-  output_folder: /eos/user/a/ayeagle/H_mumu/root_files/v4_VBFNet_samples/
+  output_folder: /eos/user/a/ayeagle/H_mumu/root_files/v4_VBFNet_data/
   input_folder: /eos/user/e/eusebi/Hmumu/anaTuples/v4_20Nov_NewJetIDs_LooseMuons/
 
 sample_list:
-  - DY
-  - EWK
-  - GluGluHto2Mu
-  - VBFHto2Mu
+  # - DY
+  # - EWK
+  # - GluGluHto2Mu
+  #- VBFHto2Mu
+  # - TT
+  # - VV
+  # - ST
+  # - VVV
+  # - TW
+  # - TTX
+  - data
 

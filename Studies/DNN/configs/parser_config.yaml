@@ -3,7 +3,7 @@ meta_data:
   columns_config: /afs/cern.ch/user/a/ayeagle/H_mumu/Studies/DNN/configs/columns_config.yaml
   output_folder: /eos/user/a/ayeagle/H_mumu/root_files/v4_parse1/
   input_folder: /eos/user/e/eusebi/Hmumu/anaTuples/v4_20Nov_NewJetIDs_LooseMuons
-  selection_cut: ((Signal_Fit) || (H_sideband) || (Z_sideband)) & (baseline_muonJet)
+  selection_cut: ((Signal_Fit) || (H_sideband)) & (baseline_muonJet)
 
 sample_list:
   - DY
@@ -12,4 +12,3 @@ sample_list:
   - VV
   - GluGluHto2Mu
   - VBFHto2Mu
-

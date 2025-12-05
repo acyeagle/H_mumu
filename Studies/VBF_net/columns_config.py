@@ -3,7 +3,8 @@ columns_config = {
     "metadata" : [
         "FullEventId",
         "isData",
-        "weight_MC_Lumi_pu",
+        #"weight_MC_Lumi_pu",
+        "final_weight",
         "era",
         "process",
         "dataset",
@@ -12,10 +13,14 @@ columns_config = {
         "Signal_ext",
         "H_sideband",
         "Z_sideband",
+        "VBF",
         "VBF_JetVeto"
     ],
     "flat_vars" : [
         "pt_mumu",
+        "m_mumu",
+        "mu1_eta",
+        "mu2_eta",
         "nSoftActivityJet",
         "SoftActivityJetHT",
         "SoftActivityJetHT2",

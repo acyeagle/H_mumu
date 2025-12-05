@@ -334,31 +334,38 @@ def VBFNetJetCollectionDef(df):
     if "Jet_idx" not in df.GetColumnNames():
         print("Jet_idx not in df.GetColumnNames")
         df = df.Define(f"Jet_idx", f"CreateIndexes(Jet_pt.size())")
-    df = df.Define(
-        f"Jet_p4",
-        f"GetP4(Jet_pt, Jet_eta, Jet_phi, Jet_mass, Jet_idx)",
-    )
+
+
+    if "Jet_p4" not in df.GetColumnNames():
+        df = df.Define(
+            f"Jet_p4",
+            f"GetP4(Jet_pt, Jet_eta, Jet_phi, Jet_mass, Jet_idx)",
+        )
 
     #### Jet PreSelection ####
-    df = df.Define(
-        "Jet_preSel",
-        f"""v_ops::pt(Jet_p4) > 20 && abs(v_ops::eta(Jet_p4))< 4.7 && (Jet_jetId & 2) """,
-    )
-    df = df.Define(
-        "Jet_preSel_andDeadZoneVetoMap",
-        "Jet_preSel && !Jet_vetoMap",
-    )
+    if "Jet_preSel" not in df.GetColumnNames():
+        df = df.Define(
+            "Jet_preSel",
+            f"""v_ops::pt(Jet_p4) > 20 && abs(v_ops::eta(Jet_p4))< 4.7 && (Jet_passJetIdTight & 2) """,
+        )
 
-    df = df.Define(
-        f"Jet_NoOverlapWithMuons",
-        f"RemoveOverlaps(Jet_p4, Jet_preSel_andDeadZoneVetoMap, {{mu1_p4, mu2_p4}}, 0.4)",
-    )
+    if "Jet_preSel_andDeadZoneVetoMap" not in df.GetColumnNames():
+        df = df.Define(
+            "Jet_preSel_andDeadZoneVetoMap",
+            "Jet_preSel && !Jet_vetoMap",
+        )
+
+    if "Jet_NoOverlapWithMuons" not in df.GetColumnNames():
+        df = df.Define(
+            f"Jet_NoOverlapWithMuons",
+            f"RemoveOverlaps(Jet_p4, Jet_preSel_andDeadZoneVetoMap, {{mu1_p4, mu2_p4}}, 0.4)",
+        )
 
     # Define jets for VBF selector network
 
     df = df.Define(
         "VBFCandJet_selection", 
-        "Jet_NoOverlapWithMuons && Jet_pt > 25 && ((ROOT::VecOps::abs(Jet_eta) < 2.5) || (ROOT::VecOps::abs(Jet_eta) > 3.0) || (Jet_pt > 50));"
+        "Jet_NoOverlapWithMuons && Jet_pt > 20 && ((ROOT::VecOps::abs(Jet_eta) < 2.5) || (ROOT::VecOps::abs(Jet_eta) > 3.0) || (Jet_pt > 50));"
     )
 
     # Add the desired variables

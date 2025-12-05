@@ -4,15 +4,17 @@ import os
 import tomllib
 from pprint import pprint
 from uuid import uuid1 as uuid
+import shutil
 
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import StratifiedKFold, train_test_split
 import torch
+from torch.utils.data import TensorDataset
 
 from dataset import JetDataset
-from rootloader import RootLoader
-from network import Network
+from pandas_loader import PandasLoader
+from network_2 import Network
 from testing import Tester
 from training import Trainer
 
@@ -27,8 +29,8 @@ def get_arguments():
     )
     parser.add_argument("-c", "--config", required=True, help="the .toml config file")
     parser.add_argument(
-        "-r",
-        "--rootfile",
+        "-d",
+        "--datafile",
         required=True,
         help="the .root file to use for testing and training events",
     )
@@ -38,15 +40,6 @@ def get_arguments():
         required=False,
         help="some string to append to the output folder name",
     )
-    parser.add_argument(
-        "-d",
-        "--down_sample",
-        required=False,
-        default=0,
-        type=float,
-        help="Downsample for testing",
-    )
-
     args = parser.parse_args()
     return args
 
@@ -55,11 +48,33 @@ def build_layer_list(config):
     # Modify layer_list to have input and output layers
     layer_list = config["network"]["layer_list"]
     # Look at the number of data columns
-    input_size = 5 * config["dataset"]["max_jets"] + 1
-    print(input_size)
+    input_size = len(config["dataset"]["data_columns"])
     config["network"]["layer_list"] = [input_size] + layer_list + [1]
     return config
 
+def make_dataset(df, for_inference, device, data_columns, **kwargs):
+    """
+    Converts the dataframe into a DataLoader object
+    """
+    # Parse input features
+    x = df[data_columns].values
+    x = torch.tensor(x, device=device, dtype=torch.double)
+    if for_inference:
+        idx = df.index.values
+        idx = torch.tensor(idx)
+        dataset = TensorDataset(x, idx)
+    else:
+        # Parse targets
+        y = df.Label.values
+        y = y.reshape([len(y), 1])
+        y = torch.tensor(y, device=device, dtype=torch.double)
+        # Parse training weights
+        w = df.Training_Weight.values
+        w = w.reshape([len(w), 1])
+        w = torch.tensor(w, device=device, dtype=torch.double)
+        # Make dataset
+        dataset = TensorDataset(x, y, w)
+    return dataset
 
 def get_device():
     # Set device for training (cpu or cuda)
@@ -75,7 +90,7 @@ def get_device():
 
 if __name__ == "__main__":
     # Set correct multiprocessing (needed for DataLoader parallelism)
-    multiprocessing.set_start_method("spawn", force=True)
+    #multiprocessing.set_start_method("spawn", force=True)
     # Read the CLI arguments
     args = get_arguments()
     device = get_device()
@@ -88,26 +103,25 @@ if __name__ == "__main__":
 
     # Load and split
     print("Reading root file --> dataframe...")
-    rl = RootLoader(args.rootfile, **config["dataset"])
-    df = rl.load_to_dataframe()
-    # Reduce datasize for a quick test
-    if args.down_sample != 0:
-        print(f"Downsampling DF to {args.down_sample} the size (for fast test)")
-        df = df.sample(frac=args.down_sample).reset_index()
+    pl = PandasLoader(args.datafile, **config["dataset"])
+    df = pl.load_to_dataframe()
 
     # Init the tester
     print("Init'ing tester...")
-    tester = Tester(df, device, **config["testing"] | config["dataset"])
+    tester = Tester(df, **config["testing"] | config["dataset"])
 
     # Init the output directory
     print("Init'ing output dir...")
     run_name = str(uuid())
     if args.label:
         run_name += f"_{args.label}"
+    dir_init = os.getcwd()
     print("\t", run_name)
     os.chdir(config["meta"]["results_dir"])
     os.mkdir(run_name)
     os.chdir(run_name)
+    path = os.path.join(dir_init, args.config)
+    shutil.copy(path, "./")
     base_dir = os.getcwd()
     print("Working dir:", base_dir)
 
@@ -115,7 +129,10 @@ if __name__ == "__main__":
     print("Performing k-fold split...")
     skf = StratifiedKFold(n_splits=config["splitting"]["k"])
     for i, (temp_idx, test_idx) in enumerate(skf.split(df, df.process)):
+        print(temp_idx)
+        print(test_idx)
         print("* ON FOLD:", i)
+        test_df = df.loc[test_idx]
         # Init an output dir for this fold
         os.mkdir(f"{i}_fold")
         os.chdir(f"{i}_fold")
@@ -128,18 +145,30 @@ if __name__ == "__main__":
             temp_df, test_size=size, stratify=temp_df["process"]
         )
 
+        if config['dataset']['renorm_inputs']:
+            print("Applying input renorm to train, valid, & test DFs...")
+            train_df, (mean, std) = pl.renorm_inputs(train_df, mean=None, std=None)
+            valid_df, _ = pl.renorm_inputs(valid_df, mean=mean, std=std)
+            test_df, _ = pl.renorm_inputs(test_df, mean=mean, std=std)
+        
         # Parse the pd.DFs to torch.Datasets, init trainer
-        print("Converting DF --> custom dataset...")
-        train_data = JetDataset(
-            train_df, weight_col="Training_Weight", **config["dataset"]
+        print("Converting DFs --> custom datasets...")
+        
+        train_data = make_dataset(
+            train_df, for_inference=False, device=device, **config['dataset']
         )
-        valid_data = JetDataset(
-            valid_df, weight_col="Training_Weight", **config["dataset"]
+        valid_data = make_dataset(
+            valid_df, for_inference=False, device=device, **config['dataset']
         )
+        test_data = make_dataset(
+            test_df, for_inference=True, device=device, **config['dataset']
+        )
+
+        # Init train
+        print("Init'ing trainer...")
         trainer = Trainer(
             train_data,
             valid_data,
-            device,
             config["optimizer"],
             **config["training"],
         )
@@ -157,7 +186,8 @@ if __name__ == "__main__":
 
         # Inference this batch
         print("Running inference...")
-        tester.test(model, test_idx)
+
+        tester.test(model, test_data)
 
         # Back to the top and do it all again
         os.chdir(base_dir)

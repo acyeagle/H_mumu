@@ -38,14 +38,17 @@ def load_model_and_data():
 
 
 def main(model, df, data_cols):
-    # Load/prep/clean
-    x_sample = df[data_cols].values
+    # Explainer population
+    remnant, background = train_test_split(df, test_size=0.1, stratify=df['process'])
+    _, sample = train_test_split(remnant, test_size=0.2, stratify=remnant['process'])
+    background = background[data_cols].values
+    sample = sample[data_cols].values
     # Define our objective function
     device = torch.device('cuda')
     f = lambda x: model(torch.tensor(x, device=device, dtype=torch.double))
     # Generate the explanatory model
-    explainer = shap.Explainer(f, x_sample, feature_names=data_cols)
-    shap_values = explainer(x_sample)
+    explainer = shap.Explainer(f, background, feature_names=data_cols)
+    shap_values = explainer(sample)
     # Do the outputs!
     shap.summary_plot(shap_values=shap_values, feature_names=data_cols)
     plt.savefig('feature_importance.png')

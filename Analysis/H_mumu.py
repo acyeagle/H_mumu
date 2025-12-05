@@ -326,10 +326,6 @@ def PrepareDfForNNInputs(dfBuilder):
 
     dfBuilder.df = RedefineIsoTrgAndIDWeights(dfBuilder.df, dfBuilder.period) # here nano pT is needed in any case because corrections are derived on nano pT
 
-    # if not dfBuilder.isData:
-    #     defineTriggerWeights(dfBuilder)
-    #     if dfBuilder.wantTriggerSFErrors:
-    #         defineTriggerWeightsErrors(dfBuilder)
 
     dfBuilder.df = AddNewDYWeights(dfBuilder.df, dfBuilder.period, f"DY" in dfBuilder.config["process_name"]) # here nano pT is needed in any case because corrections are derived on nano pT
 
@@ -352,5 +348,46 @@ def PrepareDfForNNInputs(dfBuilder):
         GetWeight()
     ) 
     dfBuilder.df = dfBuilder.df.Define("final_weight", total_weight_expression)
+
+    return dfBuilder
+
+
+def PrepareDfForVBFNetworkInputs(dfBuilder):
+    dfBuilder.df = RescaleXS(dfBuilder.df, dfBuilder.config)
+    dfBuilder.defineChannels()
+    dfBuilder.defineTriggers()
+    dfBuilder.SignRegionDef()
+
+    dfBuilder.df = AddScaReOnBS(dfBuilder.df, dfBuilder.period, dfBuilder.isData)
+    dfBuilder.df = AddRoccoR(dfBuilder.df, dfBuilder.period, dfBuilder.isData)
+
+    dfBuilder.df = RedefineIsoTrgAndIDWeights(dfBuilder.df, dfBuilder.period) # here nano pT is needed in any case because corrections are derived on nano pT
+
+
+    dfBuilder.df = AddNewDYWeights(dfBuilder.df, dfBuilder.period, f"DY" in dfBuilder.config["process_name"]) # here nano pT is needed in any case because corrections are derived on nano pT
+
+    dfBuilder.df = GetAllMuMuPtRelatedObservables(dfBuilder.df) # this can go before redefinition of pT because it defines for all the specific combinations
+
+    dfBuilder.df = GetMuMuMassResolution(dfBuilder.df) # this can go before redefinition of pT because it defines for all the specific combinations
+    dfBuilder.df = JetCollectionDef(dfBuilder.df)
+    dfBuilder.df = VBFJetSelection(dfBuilder.df)
+    dfBuilder.df = RedefineMuonsPt(dfBuilder.df, dfBuilder.config["pt_to_use"])
+    dfBuilder.df = RedefineDiMuonObservables(dfBuilder.df)
+
+    dfBuilder.df = VBFJetMuonsObservables(dfBuilder.df) # from here, the pT is needed to be specified as it depends on which muon pT to choose.
+
+
+    dfBuilder.defineRegions() # this depends on which muon pT to choose.
+    dfBuilder.defineCategories() # this depends on which muon  pT to choose.
+
+
+    if dfBuilder.isData:
+        total_weight_expression = "1"
+    else:
+        total_weight_expression = GetWeight()
+     
+    dfBuilder.df = dfBuilder.df.Define("final_weight", total_weight_expression)
+
+    dfBuilder.df = VBFNetJetCollectionDef(dfBuilder.df)
 
     return dfBuilder

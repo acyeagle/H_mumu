@@ -4,6 +4,7 @@ import os
 import shutil
 import tomllib
 from pprint import pprint
+import pickle as pkl
 from uuid import uuid1 as uuid
 
 import numpy as np
@@ -147,6 +148,14 @@ if __name__ == "__main__":
     train_df, valid_df = train_test_split(
         temp_df, test_size=config["splitting"]["validation_size"], stratify=temp_df["process"]
     )
+
+    if config['dataset']['renorm_inputs']:
+        print("Applying input renorm to train, valid, & test DFs...")
+        train_df, (mean, std) = pl.renorm_inputs(train_df, mean=None, std=None)
+        valid_df, _ = pl.renorm_inputs(valid_df, mean=mean, std=std)
+        test_df, _ = pl.renorm_inputs(test_df, mean=mean, std=std)
+    with open('renorm_var.pkl', 'wb') as f:
+        pkl.dump((mean, std), f)
     
     # Parse the pd.DFs to torch.Datasets, init trainer
     print("Converting DFs --> custom datasets...")
