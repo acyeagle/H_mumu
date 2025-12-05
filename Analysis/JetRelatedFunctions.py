@@ -193,7 +193,10 @@ def JetCollectionDef(df):
         "JetTagSel",
         "Jet_p4[Jet_NoOverlapWithMuons && Jet_btag_Veto_medium].size() < 1  && Jet_p4[Jet_NoOverlapWithMuons && Jet_btag_Veto_loose].size() < 2",
     )
+    
 
+    # df = df.Define(f"leadingjet_pt", "if (SelectedJet_p4.size()>0) return static_cast<float>(v_ops::pt(SelectedJet_p4)[0]); else return -1000.f;")
+    # df = df.Define(f"leadingjet_eta", "if (SelectedJet_p4.size()>0) return static_cast<float>(v_ops::eta(SelectedJet_p4)[0]); else return -1000.f;")
     # df = df.Define(
     #     "VBFCandJet_selection", "Jet_NoOverlapWithMuons && Jet_pt > 25 && ((ROOT::VecOps::abs(Jet_eta) < 2.5 ||  )) ];
     # )

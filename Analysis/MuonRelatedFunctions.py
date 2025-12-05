@@ -94,13 +94,13 @@ def GetAllMuMuPtRelatedObservables(df):
 
 def RedefineMuonsPt(df, pt_to_use):
     pt_names_dict = {
-        "nano":"pt_nano",
-        "scare":"pt",
-        "scare_reapplied":"reapplied_pt_1_corr", # done 1
-        "BS":"bsConstrainedPt",
-        "BS_scare":"BS_pt_1_corr",
-        "RoccoR":"RoccoR_pt",
-        "BS_RoccoR":"BS_RoccoR_pt"
+        "nano":"pt_nano", # raw nanoAOD pT
+        "scare":"pt", # anatuple pT corrected by scare (not working - because of problems in applying res)
+        "scare_reapplied":"reapplied_pt_1_corr", # pT with scare correctly applied
+        "BS":"bsConstrainedPt", # BSC pT
+        "BS_scare":"BS_pt_1_corr", # BSC pT + scare
+        "RoccoR":"RoccoR_pt", # rochester corrected pT
+        "BS_RoccoR":"BS_RoccoR_pt" # BSC pT + ScaRe 
     }
     pt_suffix = pt_names_dict[pt_to_use]
     print(f"using the pT: {pt_suffix}")

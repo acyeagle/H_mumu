@@ -191,6 +191,10 @@ def GetWeight(channel="muMu"):
             "weight_mu1_mediumID_looseIso",
             "weight_mu2_mediumID",
             "weight_mu2_mediumID_looseIso",
+            # "weight_mu1_mediumID_lowPt",
+            # "weight_mu1_mediumID_highPt",
+            # "weight_mu2_mediumID_lowPt",
+            # "weight_mu2_mediumID_highPt"
         ]
     }
 
@@ -251,6 +255,9 @@ class DataFrameBuilderForHistograms(DataFrameBuilderBase):
 
     def defineCategories(self):  # at the end
         singleMuTh = self.config["singleMu_th"][self.period]
+
+        print( f"At the beginning there are  {self.df.Count().GetValue()} events")
+
         for category_to_def in self.config["category_definition"].keys():
             category_name = category_to_def
             cat_str = self.config["category_definition"][category_to_def].format(
@@ -258,6 +265,19 @@ class DataFrameBuilderForHistograms(DataFrameBuilderBase):
             )
             self.df = self.df.Define(category_to_def, cat_str)
             self.colToSave.append(category_to_def)
+
+        filter_to_use = "baseline_muonJet"
+        print( f"There are {self.df.Filter(filter_to_use).Count().GetValue()} events in {filter_to_use}")
+        filter_to_use = "Z_sideband && baseline_muonJet"
+        print( f"There are {self.df.Filter(filter_to_use).Count().GetValue()} events in {filter_to_use}")
+
+        self.df = self.df.Define("JetOutsideOfHornVetoRegion", "Jet_NoOverlapWithMuons && ( abs(v_ops::eta(Jet_p4)) < 2.5 || abs(v_ops::eta(Jet_p4)) > 3 || v_ops::pt(Jet_p4) > 50 ) ")
+        filter_to_use = "Z_sideband && baseline_muonJet && Jet_p4[JetOutsideOfHornVetoRegion].size()>=2"
+        print( f"There are {self.df.Filter(filter_to_use).Count().GetValue()} events in {filter_to_use}")
+            # for reg_name, reg_cut in region_defs.items():
+            #     string_to_filter = f"({reg_cut}) && ({category_to_def})"
+            #     print(f"when filtering for {string_to_filter}")
+            #     print( f"There are {self.df.Filter(string_to_filter).Count().GetValue()} events in {string_to_filter}")
 
     def defineChannels(self):
         self.df = self.df.Define(f"muMu", f"return true;")

@@ -59,7 +59,7 @@ further_cuts: {}
 #  leading_mu_pt_45_EO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt < 45. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
 #  leading_mu_pt_45_EE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt < 45. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
 
- # 45 ≤ pT < 52
+# #  45 ≤ pT < 52
 #  leading_mu_pt_52_BB: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 45. && mu1_pt < 52. && abs(mu1_eta)<0.9 && abs(mu2_eta)<0.9"]
 #  leading_mu_pt_52_BO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 45. && mu1_pt < 52. && abs(mu1_eta)<0.9 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
 #  leading_mu_pt_52_BE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 45. && mu1_pt < 52. && abs(mu1_eta)<0.9 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
@@ -117,6 +117,7 @@ singleMu_th:
   Run3_2023BPix: 26
 
 categories:
+  # - baseline_MuonPOG
   - no_cuts
   - OS_sel
   - trigger_sel
@@ -125,6 +126,7 @@ categories:
   - VBF
   - VBF_JetVeto
   - ggH
+  - baseline_HornJetVeto
 
 
 
@@ -134,10 +136,12 @@ category_definition:
   OS_sel: "baseline_WPIso && OS"
   trigger_sel: "( (mu1_pt > {MuPtTh} && mu1_HasMatching_singleMu) || (mu2_pt > {MuPtTh} && mu2_HasMatching_singleMu) )"
   baseline_muonJet: "OS_sel && trigger_sel && JetTagSel" # &&  abs(mu1_dz) < 1. && abs(mu1_dxy) < 0.5 && abs(mu2_dz) < 1. && abs(mu2_dxy) < 0.5"
+  # baseline_MuonPOG: "OS_sel && trigger_sel && mu1_pfRelIso04_all < 0.15 && mu2_pfRelIso04_all< 0.15 && mu1_tightId && mu2_tightId && mu1_pt > 26 && mu2_pt>26"
   VBF_def: "baseline_muonJet && HasVBF"
   VBF: "VBF_def && j1_pt >= 35 && j2_pt >= 25 "
   HornJetVeto_def: "((abs(j1_eta) < 2.5 || abs(j1_eta) > 3 || j1_pt > 50) && (abs(j2_eta) < 2.5 || abs(j2_eta) > 3 || j2_pt > 50))"
   VBF_JetVeto: "VBF && HornJetVeto_def"
+  baseline_HornJetVeto: "baseline_muonJet && HornJetVeto_def"
   ggH: "baseline_muonJet && !(VBF_JetVeto)"
 
   # trigger_sel_ScaRe: "( (mu1_pt > {MuPtTh} && mu1_HasMatching_singleMu) || (mu2_pt > {MuPtTh} && mu2_HasMatching_singleMu) )"
