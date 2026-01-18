@@ -164,7 +164,7 @@ class Tester:
         """
         df = self.testing_df
         # Calculate bin edges for percentiles
-        signal = df[df.process == 'VBFHto2Mu']
+        signal = df[df.Label == 1]
         wq = DescrStatsW(data=signal.NN_Output, weights=signal.Class_Weight)
         p = np.linspace(0, 1, self.n_bins + 1)
         bin_edges = wq.quantile(p, return_pandas=False)
@@ -185,7 +185,7 @@ class Tester:
         """
         Takes two np arrays. Precompute a histogram and pass the bins over here.
         """
-        x = (signal_bins) / np.sqrt(background_bins + signal_bins)
+        x = (signal_bins) / np.sqrt(background_bins)
         return np.sqrt(np.sum(x**2))
 
     ### PLOTTING ###
@@ -422,7 +422,7 @@ class Tester:
         for p in self.signal_types:
             sig_total += counts_lookup[p]
         sensitivity = self.s2overb(sig_total, total)
-        plt.text(1, 1E5, r"$\frac{S}{\sqrt{S + B}} = $" + str(round(sensitivity, 3)))
+        plt.text(1, 1E5, r"$\frac{S}{\sqrt{S}} = $" + str(round(sensitivity, 3)))
 
         # Format
         if log:

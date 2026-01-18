@@ -100,7 +100,7 @@ class DataLoader:
         """
         Class_Weight is the corrected MC_Lumi_pu applied for all plotting
         """
-        df["Class_Weight"] = df.weight_MC_Lumi_pu.values.copy()
+        df["Class_Weight"] = df.final_weight.values.copy()
         if self.file_stitching is not None:
             df = self._renorm_class_weight(df)
         return df
@@ -221,6 +221,7 @@ class DataLoader:
                 df = pd.concat([df, self._root_to_dataframe(filename)])
         #df = self._add_sample_names(df)
         df.reset_index(inplace=True, drop=True)
+        df = self._ensure_float(df)
         return df
 
     ### Main runner function ###
