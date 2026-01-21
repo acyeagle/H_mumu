@@ -11,7 +11,7 @@ import uproot
 import Analysis.H_mumu as analysis
 from FLAF.Common.Setup import Setup
 
-from columns_config import columns_config
+from columns_config_union import columns_config
 
 ROOT.gSystem.Load("libRIO")
 ROOT.gInterpreter.Declare('#include <string>')
@@ -44,7 +44,7 @@ def load_configs(config_file):
     return config_dict, global_config
 
 
-def process_datasets(period, group_name, group_data, global_config, meta_data, output_columns):        
+def process_datasets(period, group_name, group_data, global_config, meta_data, output_columns, selection_cut=None):        
     # List to hold the RDataFrames for this high-level group
     print(f"\n--- Starting Processing for Group: {group_name} ---")
     for dataset_name in group_data['datasets']:
@@ -68,20 +68,15 @@ def process_datasets(period, group_name, group_data, global_config, meta_data, o
         rdf = rdf.Define("process", f'(std::string)"{group_name}"')
         rdf = rdf.Define("era", f'(std::string)"{period}"')
         # Do selection/filtering
-        print("Initial:", rdf.Count().GetValue())
-        print("\t", rdf.Sum('final_weight').GetValue())
         rdf = rdf.Filter("baseline_muonJet")
-        print("After baseline:", rdf.Count().GetValue())
-        print("\t", rdf.Sum('final_weight').GetValue())
-        rdf = rdf.Filter("Z_sideband")
-        print("Then in Z peak:", rdf.Count().GetValue())
-        print("\t", rdf.Sum('final_weight').GetValue())
         rdf = rdf.Filter("FilteredJet_pt.size() >= 2")
-        print("Then after jet filtering:", rdf.Count().GetValue())
-        print("\t", rdf.Sum('final_weight').GetValue())
+        if meta_data['selection_cut']:
+            cut = meta_data['selection_cut']
+            rdf = rdf.Filter(cut)
+
         # Save the result
         #save_column_names = ROOT.std.vector("string")(output_columns)
-        #rdf.Snapshot("Events", output_filename, output_columns)
+        rdf.Snapshot("Events", output_filename, output_columns)
         del rdf
  
 
@@ -108,6 +103,7 @@ if __name__ == '__main__':
                 group_data = {'datasets' : ['data']}
             else:
                 group_data = process_config[sample_type]
+            group_data = {'datasets' : ['DYto2Mu_MLL_105to160_amcatnloFXFX']}
             process_datasets(
                     period=period, 
                     group_name=sample_type, 
@@ -117,15 +113,15 @@ if __name__ == '__main__':
                     output_columns=output_columns
                 )
     # Run through outputs, delete empties
-    print("### Running over outputs, deleting empty root files...")
-    print("Switching to output dir:", config['meta_data']['output_folder'])
-    os.chdir(config['meta_data']['output_folder'])
-    filelist = glob('*/*.root')
-    for filename in filelist:
-        f = ROOT.TFile(filename)
-        tree = f.Get("Events")
-        count = tree.GetEntries()
-        print("\t", filename, count)
-        if count == 0:
-            print("\t\t REMOVING", filename)
-            os.remove(filename)
+    # print("### Running over outputs, deleting empty root files...")
+    # print("Switching to output dir:", config['meta_data']['output_folder'])
+    # os.chdir(config['meta_data']['output_folder'])
+    # filelist = glob('*/*.root')
+    # for filename in filelist:
+    #     f = ROOT.TFile(filename)
+    #     tree = f.Get("Events")
+    #     count = tree.GetEntries()
+    #     print("\t", filename, count)
+    #     if count == 0:
+    #         print("\t\t REMOVING", filename)
+    #         os.remove(filename)

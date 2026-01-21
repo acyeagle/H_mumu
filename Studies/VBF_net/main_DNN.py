@@ -5,6 +5,7 @@ import tomllib
 from pprint import pprint
 from uuid import uuid1 as uuid
 import shutil
+import pickle as pkl
 
 import numpy as np
 import pandas as pd
@@ -18,7 +19,6 @@ from network_2 import Network
 from testing import Tester
 from training import Trainer
 from kfold import KFolder
-from onnx_exporter import export_to_onnx
 
 
 def get_arguments():
@@ -107,6 +107,10 @@ if __name__ == "__main__":
     print("Reading root file --> dataframe...")
     pl = PandasLoader(args.datafile, **config["dataset"])
     df = pl.load_to_dataframe()
+    if 'NN_Output' in df.columns:
+        df.rename(columns={'NN_Output' : 'VBFNet_Output'}, inplace=True)
+    df = df[df.VBF_JetVeto & (df.VBFNet_Output > 0.534158)]
+    df.reset_index(inplace=True, drop=True)
 
     # Init the tester
     print("Init'ing tester...")
@@ -134,7 +138,7 @@ if __name__ == "__main__":
         print(temp_idx)
         print(test_idx)
         print("* ON FOLD:", i)
-        test_df = df.loc[test_idx]
+        test_df = df.loc[test_idx].copy()
         # Init an output dir for this fold
         os.mkdir(f"{i}_fold")
         os.chdir(f"{i}_fold")
@@ -142,25 +146,20 @@ if __name__ == "__main__":
         # Split validation off of training
         print("Train/valid splitting...")
         temp_df = df.loc[temp_idx]
-        if config['splitting']['train_types']:
-            print('Applying train_types selection...')
-            print('Initial temp df:')
-            print(temp_df.value_counts('process'))
-            tt = config['splitting']['train_types']
-            mask = temp_df.process.apply(lambda x: x in tt)
-            temp_df = temp_df[mask]
-            print('Final temp df:')
-            print(temp_df.value_counts('process'))
         size = config["splitting"]["validation_size"]
         train_df, valid_df = train_test_split(
             temp_df, test_size=size, stratify=temp_df["process"]
         )
+        train_df = train_df.copy()
+        valid_df = valid_df.copy()
 
         if config['dataset']['renorm_inputs']:
             print("Applying input renorm to train, valid, & test DFs...")
             train_df, (mean, std) = pl.renorm_inputs(train_df, mean=None, std=None)
             valid_df, _ = pl.renorm_inputs(valid_df, mean=mean, std=std)
             test_df, _ = pl.renorm_inputs(test_df, mean=mean, std=std)
+            with open('renorm_vars.pkl', 'wb') as f:
+                pkl.dump((mean, std), f)
         
         # Parse the pd.DFs to torch.Datasets, init trainer
         print("Converting DFs --> custom datasets...")
@@ -195,9 +194,6 @@ if __name__ == "__main__":
         with open("model.torch", "wb") as f:
             torch.save(model, f)
 
-        # Save model (onnx)
-        export_to_onnx(train_data.tensors[0], model, "trained_model", device, mean, std)
-        
         # Inference this batch
         print("Running inference...")
 
@@ -210,12 +206,8 @@ if __name__ == "__main__":
     print("K-fold complete! Saving final plots...")
     tester.testing_df.to_pickle("evaluated_testing_df.pkl")
     tester.make_hist(log=True)
+    tester.make_hist(log=False, weight=False, norm=True)
     tester.make_multihist(log=True)
     tester.make_roc_plot()
     tester.make_roc_plot(log=True)
-    if config['splitting']['train_types']:
-        tt = config['splitting']['train_types']
-        tester.make_hist(log=True, processes=tt)
-        tester.make_multihist(log=True, processes=tt)
-        tester.make_roc_plot(processes=tt)
-        tester.make_roc_plot(log=True, processes=tt)
+    tester.make_transformed_stackplot()

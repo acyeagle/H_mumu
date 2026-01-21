@@ -4,11 +4,12 @@ import numpy as np
 
 class PandasLoader:
 
-    def __init__(self, filepath, signal_types, data_columns, abs_train_weight=True, equalize_for_training=True, **kwargs):
+    def __init__(self, filepath, signal_types, data_columns, abs_train_weight=True, equalize_for_training=True, equalize_per_process=False, **kwargs):
         self.signal_types = signal_types
         self.abs_train_weight = abs_train_weight
         self.filepath = filepath
         self.equalize_for_training = equalize_for_training
+        self.equalize_per_process = equalize_per_process
         self.data_columns = data_columns
 
     ### Private helper funcs ###
@@ -46,6 +47,21 @@ class PandasLoader:
         df["Training_Weight"] *= scale
         return df
 
+    def _equalize_by_process(self, df):
+        """
+        Sets each process to an equal weight
+        Should NOT use both this and equalize_train_weights
+        """
+        new_weights = np.zeros(len(df))
+        for process in pd.unique(df.process):
+            mask = df.process == process
+            selected = df[mask]
+            w = 1/len(selected)
+            new_weights[mask] = w
+        df['Training_Weight'] = new_weights
+        return df
+
+
     ### Other external ###
 
     def renorm_inputs(self, df, mean=None, std=None):
@@ -80,4 +96,6 @@ class PandasLoader:
         df = self._set_training_weight(df)
         if self.equalize_for_training:
             df = self._equalize_train_weights(df)
+        elif self.equalize_per_process:
+            df = self._equalize_by_process(df)
         return df

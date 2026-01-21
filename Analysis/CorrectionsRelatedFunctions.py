@@ -92,16 +92,16 @@ def RedefineIsoTrgAndIDWeights(df, period):
         # NUM_IsoMu24_DEN_CutBasedIdTight_and_PFIsoTight --> Trg
 
         ### new tight ID - tight iso weights ####
-        df = df.Define(f"""weight_mu{muon_idx}_tightID""",f"""mu{muon_idx}_pt_nano > 15 && mu{muon_idx}_pt_nano < 200  ?cset->at("NUM_TightID_DEN_TrackerMuons")->evaluate({{mu{muon_idx}_eta, mu{muon_idx}_pt_nano, "nominal"}}) : 1.f""")
-        df = df.Define(f"""weight_mu{muon_idx}_tightID_tightIso""",f"""mu{muon_idx}_pt_nano > 15 && mu{muon_idx}_pt_nano < 200  ?cset->at("NUM_TightPFIso_DEN_TightID")->evaluate({{mu{muon_idx}_eta, mu{muon_idx}_pt_nano, "nominal"}}) : 1.f""")
+        df = df.Define(f"""weight_mu{muon_idx}_tightID""",f"""mu{muon_idx}_pt_nano > 15 ?cset->at("NUM_TightID_DEN_TrackerMuons")->evaluate({{mu{muon_idx}_eta, mu{muon_idx}_pt_nano, "nominal"}}) : 1.f""")
+        df = df.Define(f"""weight_mu{muon_idx}_tightID_tightIso""",f"""mu{muon_idx}_pt_nano > 15  ?cset->at("NUM_TightPFIso_DEN_TightID")->evaluate({{mu{muon_idx}_eta, mu{muon_idx}_pt_nano, "nominal"}}) : 1.f""")
         df = df.Define(f"""weight_mu{muon_idx}_TRG_tightID_tightIso""",f"""mu{muon_idx}_pt_nano > 26 ?cset->at("NUM_IsoMu24_DEN_CutBasedIdTight_and_PFIsoTight")->evaluate({{mu{muon_idx}_eta, mu{muon_idx}_pt_nano, "nominal"}}) : 1.f""")
 
         ### new medium ID - loose/medium iso weights ####
         # NUM_IsoMu24_DEN_CutBasedIdMedium_and_PFIsoMedium
         # NUM_MediumID_DEN_TrackerMuons
         # NUM_LoosePFIso_DEN_MediumID
-        df = df.Define(f"""weight_mu{muon_idx}_mediumID""",f"""mu{muon_idx}_pt_nano > 15 && mu{muon_idx}_pt_nano < 200  ?cset->at("NUM_MediumID_DEN_TrackerMuons")->evaluate({{mu{muon_idx}_eta, mu{muon_idx}_pt_nano, "nominal"}}) : 1.f""")
-        df = df.Define(f"""weight_mu{muon_idx}_mediumID_looseIso""",f"""mu{muon_idx}_pt_nano > 15 && mu{muon_idx}_pt_nano < 200  ?cset->at("NUM_LoosePFIso_DEN_MediumID")->evaluate({{mu{muon_idx}_eta, mu{muon_idx}_pt_nano, "nominal"}}) : 1.f""")
+        df = df.Define(f"""weight_mu{muon_idx}_mediumID""",f"""mu{muon_idx}_pt_nano > 15 ?cset->at("NUM_MediumID_DEN_TrackerMuons")->evaluate({{mu{muon_idx}_eta, mu{muon_idx}_pt_nano, "nominal"}}) : 1.f""")
+        df = df.Define(f"""weight_mu{muon_idx}_mediumID_looseIso""",f"""mu{muon_idx}_pt_nano > 15 ?cset->at("NUM_LoosePFIso_DEN_MediumID")->evaluate({{mu{muon_idx}_eta, mu{muon_idx}_pt_nano, "nominal"}}) : 1.f""")
         df = df.Define(f"""weight_mu{muon_idx}_TRG_mediumID_mediumIso""",f"""mu{muon_idx}_pt_nano > 26 ?cset->at("NUM_IsoMu24_DEN_CutBasedIdMedium_and_PFIsoMedium")->evaluate({{mu{muon_idx}_eta, mu{muon_idx}_pt_nano, "nominal"}}) : 1.f""")
 
         ####### low pt

@@ -9,6 +9,7 @@ from sklearn.metrics import auc, roc_curve
 import torch
 from torch.utils.data import DataLoader
 from tqdm import tqdm
+from statsmodels.stats.weightstats import DescrStatsW
 
 from dataset import JetDataset
 
@@ -77,19 +78,49 @@ class Tester:
         x = (signal_bins) / np.sqrt(background_bins)
         return np.sqrt(np.sum(x**2))
 
+    def _calc_transformed_hist(self):
+        """
+        Counts the populations for the DNN' plots from AN2019_205, fig 14
+        """
+        df = self.testing_df
+        # Calculate bin edges for percentiles
+        signal = df[df.Label == 1]
+        wq = DescrStatsW(data=signal.NN_Output, weights=signal.Class_Weight)
+        p = np.linspace(0, 1, self.n_bins + 1)
+        bin_edges = wq.quantile(p, return_pandas=False)
+        # Calculate the bin populations for each process
+        counts_lookup = {}
+        for p in pd.unique(df.process):
+            selected = df[df.process == p]
+            counts, _ = np.histogram(
+                selected.NN_Output, weights=selected.Class_Weight, bins=bin_edges
+            )
+            counts_lookup[p] = counts
+        print("Bin edges:", bin_edges)
+        pprint(counts_lookup)
+        return bin_edges, counts_lookup
+
+
     ### PLOTTING ###
 
-    def make_hist(self, weight=True, log=True, norm=False, show=False):
+    def make_hist(self, weight=True, log=True, norm=False, show=False, processes=None):
         """
         Saves a histo of all signal vs all background
         """
         plt.clf()
         output_name = "model_hist"
         results = self.testing_df
+        if processes:
+            mask = results.process.apply(lambda x: x in processes)
+            results = results[mask]
+            output_name += "_trainprocessonly"
         signal = results[results.Label == 1]
         background = results[results.Label == 0]
         if norm:
-            w = sum(background.Class_Weight) / sum(signal.Class_Weight)
+            if weight:
+                w = sum(background.Class_Weight) / sum(signal.Class_Weight)
+            else:
+                w = len(background)/len(signal)
             output_name += "_normed"
         else:
             w = 1
@@ -107,7 +138,8 @@ class Tester:
                 weights=background.Class_Weight,
             )
         else:
-            h1 = np.histogram(signal.NN_Output, range=self.hist_range, bins=self.n_bins)
+            w_temp = np.ones(len(signal))
+            h1 = np.histogram(signal.NN_Output, range=self.hist_range, bins=self.n_bins, weights=w_temp * w)
             h2 = np.histogram(
                 background.NN_Output, range=self.hist_range, bins=self.n_bins
             )
@@ -133,18 +165,24 @@ class Tester:
         # Set rest of plot and save/show
         plt.xlabel("Network output")
         plt.legend(bbox_to_anchor=(1.05, 1), loc="upper left")
+        mplhep.cms.label(com=13.6, lumi=62.4)
         if show:
             plt.show()
         else:
-            plt.savefig(output_name + ".svg", bbox_inches="tight")
+            plt.savefig(output_name + ".svg", bbox_inches="tight") 
 
-    def make_multihist(self, weight=True, log=False, show=False):
+    def make_multihist(self, weight=True, log=False, show=False, processes=None):
         """
         Saves a histo with the different processes drawn independently
         """
         # Init plot
         plt.clf()
         df = self.testing_df
+        output_name = "multihist"
+        if processes:
+            mask = df.process.apply(lambda x: x in processes)
+            df = df[mask]
+            output_name += "_trainprocessonly"
         # Add individual hist curves
         for p in sorted(pd.unique(df.process)):
             selected = df[df.process == p]
@@ -161,7 +199,6 @@ class Tester:
                 )
             plt.stairs(*h, label=p)
         # Plot config from boolean parameters
-        output_name = "multihist"
         if log:
             plt.yscale("log")
         if weight:
@@ -179,13 +216,17 @@ class Tester:
         else:
             plt.savefig(output_name + ".svg", bbox_inches="tight")
 
-    def make_roc_plot(self, log=True, hist_points=False, show=False):
+    def make_roc_plot(self, log=True, hist_points=False, show=False, processes=None):
         """
         Plot ROC and adds AUC calculation to plot
         """
         plt.clf()
         df = self.testing_df
         output_name = "roc"
+        if processes:
+            mask = df.process.apply(lambda x: x in processes)
+            df = df[mask]
+            output_name += "_trainprocessonly"
         df = self.testing_df
         # Calc curve from sklearn
         fpr, tpr, _ = roc_curve(df.Label, df.NN_Output, sample_weight=df.Class_Weight)
@@ -222,3 +263,64 @@ class Tester:
             plt.show()
         else:
             plt.savefig(output_name + ".svg", bbox_inches="tight")
+
+    def make_transformed_stackplot(
+        self, log=True, show=False, min_power=-3, top_power=6
+    ):
+        """
+        Replication for the DNN' plots from AN2019_205, fig 14
+        """
+        plt.clf()
+        df = self.testing_df
+        output_name = "transformed_stack"
+        bin_edges, counts_lookup = self._calc_transformed_hist()
+
+        stack_proc = pd.unique(df.process[df.Label == 0])
+        other_proc = pd.unique(df.process[df.Label == 1])
+        # Sort the stacked processes (smallest on bottom)
+        stack_proc = [(x, sum(counts_lookup[x])) for x in stack_proc]
+        stack_proc = sorted(stack_proc, key=lambda x: x[1])
+        stack_proc = [x[0] for x in stack_proc]
+
+        # Do the stacking
+        baseline = np.zeros(len(bin_edges) - 1)
+        total = np.zeros(len(baseline))
+        x = np.linspace(0, self.n_bins, self.n_bins + 1)
+        for p in stack_proc:
+            total += counts_lookup[p]
+            plt.stairs(
+                total, x, label=p, baseline=baseline, fill=True
+            )
+            baseline += counts_lookup[p]
+        # and add the non-stackers
+        for p in other_proc:
+            plt.stairs(counts_lookup[p], x, label=p, linewidth=2)
+
+        # Add S/sqrt(B) to plot
+        sig_total = np.zeros(len(baseline))
+        for p in pd.unique(df.process[df.Label==1]):
+            sig_total += counts_lookup[p]
+        sensitivity = self.s2overb(sig_total, total)
+        plt.text(1, 1E5, r"$\frac{S}{\sqrt{B}} = $" + str(round(sensitivity, 3)))
+
+        # Format
+        if log:
+            output_name += "_log"
+            plt.yscale("log")
+        plt.xlabel(r"$DNN^{\prime}$")
+        major_ticks = [1 * 10**x for x in range(min_power, top_power + 1)]
+        minor_ticks = [
+            y * 10**x for y in range(2, 10) for x in range(min_power, top_power - 1)
+        ]
+        plt.ylim(10**min_power, 10**top_power)
+        plt.ylabel("Events")
+        plt.yticks(major_ticks)
+        plt.yticks(minor_ticks, minor=True)
+        # plt.legend(bbox_to_anchor=(1.05, 1), loc="upper left")
+        plt.legend()
+        mplhep.cms.label(com=13.6, lumi=62.4)
+        if show:
+            plt.show()
+        else:
+            output_name += ".svg"
+            plt.savefig(output_name, bbox_inches="tight")

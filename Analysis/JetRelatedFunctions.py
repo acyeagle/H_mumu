@@ -349,7 +349,7 @@ def VBFNetJetCollectionDef(df):
     if "Jet_preSel" not in df.GetColumnNames():
         df = df.Define(
             "Jet_preSel",
-            f"""v_ops::pt(Jet_p4) > 20 && abs(v_ops::eta(Jet_p4))< 4.7 && (Jet_passJetIdTight & 2) """,
+            f"""v_ops::pt(Jet_p4) > 20 && abs(v_ops::eta(Jet_p4))< 4.7 && (Jet_passJetIdTight) """,
         )
 
     if "Jet_preSel_andDeadZoneVetoMap" not in df.GetColumnNames():
