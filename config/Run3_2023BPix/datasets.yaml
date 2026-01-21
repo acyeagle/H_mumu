@@ -1,0 +1,21 @@
+GluGluHto2Mu:
+  crossSection: GluGluHto2Mu
+  generator: powheg
+
+TTH_Hto2Mu:
+  crossSection: TTH_Hto2Mu
+  generator: powheg
+
+VBFHto2Mu:
+  crossSection: VBFHto2Mu
+  generator: powheg
+
+WminusH_Hto2Mu_WtoAll:
+  crossSection: WminusH_Hto2Mu_WtoAll
+  generator: powheg
+WplusH_Hto2Mu_WtoAll:
+  crossSection: WplusH_Hto2Mu_WtoAll
+  generator: powheg
+ZH_Hto2Mu_ZtoAll:
+  crossSection: ZH_Hto2Mu_ZtoAll
+  generator: powheg

@@ -1,15 +1,46 @@
 # https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauTrigger#Updates_for_2022_data_taking
+# https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauTrigger#Updates_for_2022_data_taking
 
 singleMu:
   channels:
     - muMu
   path:
-    - HLT_IsoMu24
+    - HLT_IsoMu24  # ####  COMPARISON WITH RUN2 #### --> What whas done in Run2 analysis: Require event to pass HLT IsoMu24 or HL IsoTkMu24 triggers in 2016, HLT IsoMu27 in 2017 and HLT IsoMu24 in 2018. -- See AN/2019_185 lines 123 - 130
   legs:
     - offline_obj:
-        cut: "{obj}_legType == Leg::mu && {obj}_pt > 26" # {obj}_pt > 26 && abs({obj}_eta) < 2.4
+        cut: "{obj}_legType == Leg::mu && {obj}_{pt}> 26"  # selection for offline object matching to the trigger, same w.r.t. run 2
       online_obj:
-        cut: TrigObj_id == 13 && (TrigObj_filterBits&8)!=0
+        cut: TrigObj_id == 13 && (TrigObj_filterBits&8)!=0  # selection for online object matching to the trigger, same w.r.t. run2
+      doMatching: True
+      jsonTRGcorrection_key:
+        2022_Summer22: NUM_IsoMu24_DEN_CutBasedId{MuIDWP}_and_PFIso{MuIDWP}
+        2022_Summer22EE: NUM_IsoMu24_DEN_CutBasedId{MuIDWP}_and_PFIso{MuIDWP}
+        2023_Summer23: NUM_IsoMu24_DEN_CutBasedId{MuIDWP}_and_PFIso{MuIDWP}
+        2023_Summer23BPix: NUM_IsoMu24_DEN_CutBasedId{MuIDWP}_and_PFIso{MuIDWP}
+      jsonTRGcorrection_elepath: "placeholder"
+
+# https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauTrigger#Updates_for_2022_data_taking
+diMu:
+  channels:
+    - muMu
+  path:
+    - HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL
+  legs:
+    - offline_obj:
+        cut: "{obj}_legType == Leg::mu && {obj}_{pt}> 19"
+      online_obj:
+        cut: TrigObj_id==13 && ( (TrigObj_filterBits&16)!=0 || (TrigObj_filterBits&1)!=0 ) # https://github.com/cms-sw/cmssw/blob/b0efeefd50e1ea7f64083f0aa1af9066f3430e10/PhysicsTools/NanoAOD/python/triggerObjects_cff.py https://cmshltcfg.app.cern.ch/cfg?path=/cdaq/physics/Run2023/2e34/v1.2.3/HLT/V1&db=online
+      doMatching: True
+      jsonTRGcorrection_key:
+        2022_Summer22: NUM_IsoMu24_DEN_CutBasedIdMedium_and_PFIsoMedium
+        2022_Summer22EE: NUM_IsoMu24_DEN_CutBasedIdMedium_and_PFIsoMedium
+        2023_Summer23: NUM_IsoMu24_DEN_CutBasedIdMedium_and_PFIsoMedium
+        2023_Summer23BPix: NUM_IsoMu24_DEN_CutBasedIdMedium_and_PFIsoMedium
+      jsonTRGcorrection_elepath: "placeholder"
+    - offline_obj:
+        cut: "{obj}_legType == Leg::mu && {obj}_{pt}> 10"
+      online_obj:
+        cut: TrigObj_id==13 && ( (TrigObj_filterBits&16)!=0 || (TrigObj_filterBits&1)!=0 ) # https://github.com/cms-sw/cmssw/blob/b0efeefd50e1ea7f64083f0aa1af9066f3430e10/PhysicsTools/NanoAOD/python/triggerObjects_cff.py https://cmshltcfg.app.cern.ch/cfg?path=/cdaq/physics/Run2023/2e34/v1.2.3/HLT/V1&db=online
       doMatching: True
       jsonTRGcorrection_key:
         2022_Summer22: NUM_IsoMu24_DEN_CutBasedIdMedium_and_PFIsoMedium

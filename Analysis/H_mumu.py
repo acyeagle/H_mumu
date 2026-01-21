@@ -7,11 +7,13 @@ if __name__ == "__main__":
 
 
 from FLAF.Common.Utilities import *
+from FLAF.Common.Setup import *
+import FLAF.Common.triggerSel as Triggers
 from FLAF.Common.HistHelper import *
 from Analysis.GetTriggerWeights import *
-from Analysis.CorrectionsRelatedFunctions import *
 from Analysis.MuonRelatedFunctions import *
 from Analysis.JetRelatedFunctions import *
+from Corrections.Corrections import Corrections
 
 for header in [
     "FLAF/include/Utilities.h",
@@ -21,7 +23,6 @@ for header in [
     "FLAF/include/AnalysisMath.h",
 ]:
     DeclareHeader(os.environ["ANALYSIS_PATH"] + "/" + header)
-
 
 
 def createKeyFilterDict(global_params, period):
@@ -149,35 +150,25 @@ def SaveVarsForNNInput(variables):
     return variables
 
 
-def GetWeight(channel="muMu"):
+def GetWeight(channel, process_name, muID_WP_for_SF, muIso_WP_for_SF):
     weights_to_apply = [
         "weight_MC_Lumi_pu",
-        "weight_XS",
-        "newDYWeight_ptLL_nano"
+        # "weight_XS",
+        # "newDYWeight_ptLL_nano"
+        # "newDYWeight_ptLL_bsConstrained"
         # "weight_DYw_DYWeightCentral",
         # "weight_EWKCorr_VptCentral",
     ]  # ,"weight_EWKCorr_ewcorrCentral"] #
+    # quick fix for DY weights. In future should pass the full dataset and process info to DefineWeightForHistograms
+    if process_name.startswith("DY"):
+        weights_to_apply.extend(
+            [
+                "weight_EWKCorr_VptCentral",
+                "weight_DYw_DYWeightCentral",
+            ]
+        )
 
-    trg_weights_dict = {
-        # "muMu": ["weight_trigSF_singleMu"]
-        "muMu": ["weight_trigSF_singleMu_mediumID_mediumIso"]
-        # "muMu": ["weight_trigSF_singleMu_tightID_tightIso"]
-
-    }
-    # ID_weights_dict = {
-    #     "muMu": [
-    #         # "weight_mu1_HighPt_MuonID_SF_MediumIDCentral",
-    #         # "weight_mu1_LowPt_MuonID_SF_MediumIDCentral",
-    #         # "weight_mu1_MuonID_SF_LoosePFIsoCentral",
-    #         "weight_mu1_MuonID_SF_MediumID_TrkCentral",
-    #         "weight_mu1_MuonID_SF_MediumIDLoosePFIsoCentral",
-    #         # "weight_mu2_HighPt_MuonID_SF_MediumIDCentral",
-    #         # "weight_mu2_LowPt_MuonID_SF_MediumIDCentral",
-    #         "weight_mu2_MuonID_SF_MediumIDLoosePFIsoCentral",
-    #         # "weight_mu2_MuonID_SF_LoosePFIsoCentral",
-    #         "weight_mu2_MuonID_SF_MediumID_TrkCentral",
-    #     ]
-    # }
+    trg_weights_dict = {"muMu": ["weight_TrgSF_singleMu_IsoMu24Central"]}
 
     ID_weights_dict = {
         # "muMu": [
@@ -187,17 +178,12 @@ def GetWeight(channel="muMu"):
         #     "weight_mu2_tightID_tightIso",
         # ]
         "muMu": [
-            "weight_mu1_mediumID",
-            "weight_mu1_mediumID_looseIso",
-            "weight_mu2_mediumID",
-            "weight_mu2_mediumID_looseIso",
-            # "weight_mu1_mediumID_lowPt",
-            # "weight_mu1_mediumID_highPt",
-            # "weight_mu2_mediumID_lowPt",
-            # "weight_mu2_mediumID_highPt"
+            f"weight_mu1_MuonID_SF_{muID_WP_for_SF}ID_TrkCentral",
+            f"weight_mu1_MuonID_SF_{muIso_WP_for_SF}PFIso_{muID_WP_for_SF}IDCentral",
+            f"weight_mu2_MuonID_SF_{muID_WP_for_SF}ID_TrkCentral",
+            f"weight_mu2_MuonID_SF_{muIso_WP_for_SF}PFIso_{muID_WP_for_SF}IDCentral",
         ]
     }
-
 
     # should be moved to config
     weights_to_apply.extend(ID_weights_dict[channel])
@@ -208,24 +194,45 @@ def GetWeight(channel="muMu"):
     return total_weight
 
 
+def InitializeCorrections(period, dataset_name, stage="HistTuple"):
+    setup = Setup.getGlobal(os.environ["ANALYSIS_PATH"], period)
+    if dataset_name == "data":
+        dataset_cfg = {}
+        process_name = "data"
+        process = {}
+        isData = True
+        processors_cfg = {}
+        processor_instances = {}
+    else:
+        dataset_cfg = setup.datasets[dataset_name]
+        process_name = dataset_cfg["process_name"]
+        process = setup.base_processes[process_name]
+        isData = dataset_cfg["process_group"] == "data"
+        processors_cfg, processor_instances = setup.get_processors(
+            process_name, stage="HistTuple", create_instances=True
+        )
+
+    triggerFile = setup.global_params.get("triggerFile")
+    trigger_class = None
+    if triggerFile is not None:
+        triggerFile = os.path.join(os.environ["ANALYSIS_PATH"], triggerFile)
+        trigger_class = Triggers.Triggers(triggerFile)
+    if Corrections._global_instance is None:
+        Corrections.initializeGlobal(
+            global_params=setup.global_params,
+            stage="HistTuple",
+            dataset_name=dataset_name,
+            dataset_cfg=dataset_cfg,
+            process_name=process_name,
+            process_cfg=process,
+            processors=processor_instances,
+            isData=isData,
+            load_corr_lib=True,
+            trigger_class=trigger_class,
+        )
+
+
 class DataFrameBuilderForHistograms(DataFrameBuilderBase):
-
-    # def RescaleXS(self):
-    #     import yaml
-    #     xsFile = self.config["crossSectionsFile"]
-    #     xsFilePath = os.path.join(os.environ["ANALYSIS_PATH"], xsFile)
-    #     with open(xsFilePath, "r") as xs_file:
-    #         xs_dict = yaml.safe_load(xs_file)
-    #     xs_condition = f"DY" in self.config["process_name"] #== "DY"
-    #     xs_to_scale = (
-    #         xs_dict["DY_NNLO_QCD+NLO_EW"]["crossSec"] if xs_condition else "1.f"
-    #     )
-    #     weight_XS_string = f"xs_to_scale/current_xs" if xs_condition else "1."
-    #     total_denunmerator_nJets = 5378.0 / 3 + 1017.0 / 3 + 385.5 / 3
-    #     self.df = self.df.Define(f"current_xs", f"{total_denunmerator_nJets}")
-    #     self.df = self.df.Define(f"xs_to_scale", f"{xs_to_scale}")
-    #     self.df = self.df.Define(f"weight_XS", weight_XS_string)
-
     def defineTriggers(self):
         for ch in self.config["channelSelection"]:
             for trg in self.config["triggers"][ch]:
@@ -255,11 +262,15 @@ class DataFrameBuilderForHistograms(DataFrameBuilderBase):
 
     def defineCategories(self):  # at the end
         singleMuTh = self.config["singleMu_th"][self.period]
+        WP_to_use = self.config["WP_to_use"]
+        mu_pt_for_selection = self.config["mu_pt_for_selection"]
 
         for category_to_def in self.config["category_definition"].keys():
             category_name = category_to_def
             cat_str = self.config["category_definition"][category_to_def].format(
-                MuPtTh=singleMuTh
+                MuPtTh=singleMuTh,
+                WP_to_use=WP_to_use,
+                mu_pt_for_selection=mu_pt_for_selection,
             )
             self.df = self.df.Define(category_to_def, cat_str)
             self.colToSave.append(category_to_def)
@@ -279,10 +290,11 @@ class DataFrameBuilderForHistograms(DataFrameBuilderBase):
         df,
         config,
         period,
+        corrections,
         isData=False,
-        isCentral=True,
         wantTriggerSFErrors=False,
         colToSave=[],
+        is_not_Cache=False,
     ):
         super(DataFrameBuilderForHistograms, self).__init__(df)
         self.config = config
@@ -290,76 +302,34 @@ class DataFrameBuilderForHistograms(DataFrameBuilderBase):
         self.period = period
         self.colToSave = colToSave
         self.wantTriggerSFErrors = wantTriggerSFErrors
+        self.corrections = corrections
 
 
-def PrepareDfForHistograms(dfForHistograms):
-    dfForHistograms.df = RescaleXS(dfForHistograms.df,dfForHistograms.config)
-    dfForHistograms.defineChannels()
-    dfForHistograms.defineTriggers()
-    dfForHistograms.SignRegionDef()
+def PrepareDFBuilder(dfBuilder):
+    print("Preparing DFBuilder...")
+    dfBuilder.df = GetMuMuP4Observables(dfBuilder.df)
+    if (
+        "muScaRe" in dfBuilder.corrections.to_apply
+        and config["corrections"]["muScaRe"]["stage"] == "HistTuples"
+    ):
+        dfBuilder.df = dfBuilder.corrections.muScaRe.getP4VariationsForLegs(
+            dfBuilder.df
+        )
 
-    dfForHistograms.df = AddScaReOnBS(dfForHistograms.df, dfForHistograms.period, dfForHistograms.isData)
-    dfForHistograms.df = AddRoccoR(dfForHistograms.df, dfForHistograms.period, dfForHistograms.isData)
-
-    dfForHistograms.df = RedefineIsoTrgAndIDWeights(dfForHistograms.df, dfForHistograms.period) # here nano pT is needed in any case because corrections are derived on nano pT
-
-    # if not dfForHistograms.isData:
-    #     defineTriggerWeights(dfForHistograms)
-    #     if dfForHistograms.wantTriggerSFErrors:
-    #         defineTriggerWeightsErrors(dfForHistograms)
-
-    dfForHistograms.df = AddNewDYWeights(dfForHistograms.df, dfForHistograms.period, f"DY" in dfForHistograms.config["process_name"]) # here nano pT is needed in any case because corrections are derived on nano pT
-
-    dfForHistograms.df = GetAllMuMuPtRelatedObservables(dfForHistograms.df) # this can go before redefinition of pT because it defines for all the specific combinations
-
-    dfForHistograms.df = GetMuMuMassResolution(dfForHistograms.df) # this can go before redefinition of pT because it defines for all the specific combinations
-    dfForHistograms.df = JetCollectionDef(dfForHistograms.df)
-    dfForHistograms.df = VBFJetSelection(dfForHistograms.df)
-    dfForHistograms.df = RedefineMuonsPt(dfForHistograms.df, dfForHistograms.config["pt_to_use"])
-    dfForHistograms.df = RedefineDiMuonObservables(dfForHistograms.df)
-
-    dfForHistograms.df = VBFJetMuonsObservables(dfForHistograms.df) # from here, the pT is needed to be specified as it depends on which muon pT to choose.
-
-
-    dfForHistograms.defineRegions() # this depends on which muon pT to choose.
-    dfForHistograms.defineCategories() # this depends on which muon  pT to choose.
-    return dfForHistograms
-
-
-def PrepareDfForNNInputs(dfBuilder):
-    dfBuilder.df = RescaleXS(dfBuilder.df, dfBuilder.config)
+    dfBuilder.df = GetAllMuMuCorrectedPtRelatedObservables(
+        dfBuilder.df, suffix=dfBuilder.config["mu_pt_for_definitions"]
+    )
+    # if "m_mumu_resolution" in dfBuilder.config["variables"]:
+    #     dfBuilder.df = GetMuMuMassResolution(dfBuilder.df, dfBuilder.config["pt_to_use"])
     dfBuilder.defineChannels()
     dfBuilder.defineTriggers()
     dfBuilder.SignRegionDef()
-
-    dfBuilder.df = AddScaReOnBS(dfBuilder.df, dfBuilder.period, dfBuilder.isData)
-    dfBuilder.df = AddRoccoR(dfBuilder.df, dfBuilder.period, dfBuilder.isData)
-
-    dfBuilder.df = RedefineIsoTrgAndIDWeights(dfBuilder.df, dfBuilder.period) # here nano pT is needed in any case because corrections are derived on nano pT
-
-
-    dfBuilder.df = AddNewDYWeights(dfBuilder.df, dfBuilder.period, f"DY" in dfBuilder.config["process_name"]) # here nano pT is needed in any case because corrections are derived on nano pT
-
-    dfBuilder.df = GetAllMuMuPtRelatedObservables(dfBuilder.df) # this can go before redefinition of pT because it defines for all the specific combinations
-
-    dfBuilder.df = GetMuMuMassResolution(dfBuilder.df) # this can go before redefinition of pT because it defines for all the specific combinations
     dfBuilder.df = JetCollectionDef(dfBuilder.df)
+    dfBuilder.df = JetObservablesDef(dfBuilder.df)
     dfBuilder.df = VBFJetSelection(dfBuilder.df)
-    dfBuilder.df = RedefineMuonsPt(dfBuilder.df, dfBuilder.config["pt_to_use"])
-    dfBuilder.df = RedefineDiMuonObservables(dfBuilder.df)
-
-    dfBuilder.df = VBFJetMuonsObservables(dfBuilder.df) # from here, the pT is needed to be specified as it depends on which muon pT to choose.
-
-
-    dfBuilder.defineRegions() # this depends on which muon pT to choose.
-    dfBuilder.defineCategories() # this depends on which muon  pT to choose.
-
-
-    total_weight_expression = (
-        GetWeight()
-    ) 
-    dfBuilder.df = dfBuilder.df.Define("final_weight", total_weight_expression)
-
+    dfBuilder.df = VBFJetMuonsObservables(dfBuilder.df)
+    dfBuilder.defineRegions()
+    dfBuilder.defineCategories()
     return dfBuilder
 
 

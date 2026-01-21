@@ -49,14 +49,16 @@ def RecoHttCandidateSelection(df, config):
     )
 
 
-def LeptonVeto(df):
+def LeptonVeto(df, muon_pt_to_use="pt_nano"):
     df = df.Define("Muon_iso", "Muon_pfRelIso04_all")
     ####  COMPARISON WITH RUN2 ####
     # pT > 10 is a GENERAL preselection cut, then the muon matching to the offline one (which is the "leading" in Run2 analysis, in this case can be either the first or the second) has the offline pT threshold driven by the trigger. The eta, ID and iso cuts are the same w.r.t. Run 2 -- See AN/2019_185 lines 123 - 130 #  dxy < 0.5 cm, dz < 1.0 cm
+    muon_sel_p4 = f"Muon_p4_{muon_pt_to_use}"
+    print(f"Using muon p4: {muon_sel_p4} for lepton veto preselection")
     df = df.Define(
         "Muon_B0",
         f"""
-        v_ops::pt(Muon_p4) > 10 && abs(v_ops::eta(Muon_p4)) < 2.4 && (Muon_looseId && Muon_iso < 0.4)""", # loose id and very loose iso 
+        v_ops::pt({muon_sel_p4}) > 10 && abs(v_ops::eta({muon_sel_p4})) < 2.4 && (Muon_looseId && Muon_iso < 0.4)""",  #  loose id and very loose iso
         # v_ops::pt(Muon_p4) > 10 && abs(v_ops::eta(Muon_p4)) < 2.4 && (Muon_mediumId && Muon_iso < 0.25) && abs(Muon_dz) < 1. && abs(Muon_dxy) < 0.5""",
     )
 
@@ -74,8 +76,8 @@ def LeptonVeto(df):
     ####  COMPARISON WITH RUN2 ####
     # electron veto, same w.r.t. Run3 - See AN/2019_205 lines 246 - 248
     df = df.Filter("Electron_idx[Electron_B0_veto].size() == 0", "No extra electrons")
-    df = df.Define("mu1_idx","Muon_idx[Muon_B0][0]")
-    df = df.Define("mu2_idx","Muon_idx[Muon_B0][1]")
+    df = df.Define("mu1_idx", "Muon_idx[Muon_B0][0]")
+    df = df.Define("mu2_idx", "Muon_idx[Muon_B0][1]")
     return df
 
 

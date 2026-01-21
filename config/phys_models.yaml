@@ -6,10 +6,13 @@ BaseModel:
     - TT
     - VV
     - EWK
+<<<<<<< HEAD
     # - EWK_LLJJ
     # - EWK_LLJJ_herwig
     # - EWK_LLJJ_M105_160
     # - EWK_LLJJ_M105_160_VBFFilter
+=======
+>>>>>>> d9d5fda766ad0f951a31307f24beca9ac4623a2c
     - W_NJets
     - ST
     - TW

@@ -1,13 +1,44 @@
 ############## DY ##############
 DY:
+<<<<<<< HEAD
   name: "DY 012 jets"
   name: "DY 012 jets"
   cross_section_correction: 12/ 11  # NLO -> NNLO
   color: "kAzure+7"
   color_mplhep: lightskyblue
   color_mplhep: lightskyblue
+=======
+  name: "DY"
+  color: "kAzure+7"
+  color_mplhep: lightskyblue
+  sub_processes:
+    - DY_M_10to50
+    - DYto2E_M_50
+    - DYto2Mu_M_50
+    - DYto2Tau_M_50
+
+DY_M_10to50:
+  name: "DY M10to50"
+  color: "kAzure+10"
+  corrections:
+    Vpt:
+      type: DY
+>>>>>>> d9d5fda766ad0f951a31307f24beca9ac4623a2c
   datasets:
+    - DYto2E_M_10to50_amcatnloFXFX
+    - DYto2Mu_M_10to50_amcatnloFXFX
+    - DYto2Tau_M_10to50_amcatnloFXFX
+
+DYto2E_M_50:
+  processors: *DY_processors
+  corrections:
+    Vpt:
+      type: DY
+  datasets:
+    - DYto2E_M_50_amcatnloFXFX
+    - DYto2E_M_50_amcatnloFXFX_ext1
     - DYto2E_M_50_0J_amcatnloFXFX
+<<<<<<< HEAD
     - DYto2Mu_M_50_0J_amcatnloFXFX
     # - DYto2Tau_M_50_0J_Filtered_amcatnloFXFX
     - DYto2Tau_M_50_0J_amcatnloFXFX
@@ -15,8 +46,33 @@ DY:
     - DYto2Mu_M_50_1J_amcatnloFXFX
     # - DYto2Tau_M_50_1J_Filtered_amcatnloFXFX
     - DYto2Tau_M_50_1J_amcatnloFXFX
+=======
+    - DYto2E_M_50_1J_amcatnloFXFX
+>>>>>>> d9d5fda766ad0f951a31307f24beca9ac4623a2c
     - DYto2E_M_50_2J_amcatnloFXFX
+    - DYto2E_M_50_PTLL_40to100_1J_amcatnloFXFX
+    - DYto2E_M_50_PTLL_100to200_1J_amcatnloFXFX
+    - DYto2E_M_50_PTLL_200to400_1J_amcatnloFXFX
+    - DYto2E_M_50_PTLL_400to600_1J_amcatnloFXFX
+    - DYto2E_M_50_PTLL_600_1J_amcatnloFXFX
+    - DYto2E_M_50_PTLL_40to100_2J_amcatnloFXFX
+    - DYto2E_M_50_PTLL_100to200_2J_amcatnloFXFX
+    - DYto2E_M_50_PTLL_200to400_2J_amcatnloFXFX
+    - DYto2E_M_50_PTLL_400to600_2J_amcatnloFXFX
+    - DYto2E_M_50_PTLL_600_2J_amcatnloFXFX
+
+DYto2Mu_M_50:
+  processors: *DY_processors
+  corrections:
+    Vpt:
+      type: DY
+  datasets:
+    - DYto2Mu_M_50_amcatnloFXFX
+    - DYto2Mu_M_50_amcatnloFXFX_ext1
+    - DYto2Mu_M_50_0J_amcatnloFXFX
+    - DYto2Mu_M_50_1J_amcatnloFXFX
     - DYto2Mu_M_50_2J_amcatnloFXFX
+<<<<<<< HEAD
     # - DYto2Tau_M_50_2J_Filtered_amcatnloFXFX
     - DYto2Tau_M_50_2J_amcatnloFXFX
 
@@ -28,6 +84,29 @@ DY_mll_105To160:
   datasets:
     - DYto2Mu_MLL_105to160_amcatnloFXFX
 
+=======
+    - DYto2Mu_M_50_PTLL_40to100_1J_amcatnloFXFX
+    - DYto2Mu_M_50_PTLL_100to200_1J_amcatnloFXFX
+    - DYto2Mu_M_50_PTLL_200to400_1J_amcatnloFXFX
+    - DYto2Mu_M_50_PTLL_400to600_1J_amcatnloFXFX
+    - DYto2Mu_M_50_PTLL_600_1J_amcatnloFXFX
+    - DYto2Mu_M_50_PTLL_40to100_2J_amcatnloFXFX
+    - DYto2Mu_M_50_PTLL_100to200_2J_amcatnloFXFX
+    - DYto2Mu_M_50_PTLL_200to400_2J_amcatnloFXFX
+    - DYto2Mu_M_50_PTLL_400to600_2J_amcatnloFXFX
+    - DYto2Mu_M_50_PTLL_600_2J_amcatnloFXFX
+
+DYto2Tau_M_50:
+  processors: *DY_processors
+  corrections:
+    Vpt:
+      type: DY
+  datasets:
+    - DYto2Tau_M_50_0J_amcatnloFXFX
+    - DYto2Tau_M_50_1J_amcatnloFXFX
+    - DYto2Tau_M_50_2J_amcatnloFXFX
+
+>>>>>>> d9d5fda766ad0f951a31307f24beca9ac4623a2c
 
 DYToMuMu_MiNNLO:
   name: "DY $\\rightarrow \\ell \\ell$ + jets"
@@ -314,7 +393,6 @@ Data_Muon:
   name: "Data Muon"
   datasets:
     - SingleMuon_Run2022C
-    # - DoubleMuon_Run2022C
     - Muon_Run2022C
     - Muon_Run2022D
 

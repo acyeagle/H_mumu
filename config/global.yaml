@@ -9,8 +9,6 @@ signal_types:
 #  - VH
 
 storeFatJets: False
-bjet_preselection_branch: "Jet_B0"
-tagger_name: particleNet
 met_type: "PuppiMET"
 
 treeName: "Events"
@@ -38,6 +36,7 @@ further_cuts: {}
 #  etamm_above2p4: ["eta_mumu","abs(eta_mumu) > 2.4"]
 #  inclusive: [["eta_mumu"],"abs(eta_mumu) >= 0."]
 #  # Inclusive
+#  inclusive_etainclusive: [["mu1_pt"], "mu1_pt >= 0."]
 #  inclusive_BB: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 0. && abs(mu1_eta)<0.9 && abs(mu2_eta)<0.9"]
 #  inclusive_BO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 0. && abs(mu1_eta)<0.9 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
 #  inclusive_BE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 0. && abs(mu1_eta)<0.9 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
@@ -48,6 +47,7 @@ further_cuts: {}
 #  inclusive_EO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 0. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
 #  inclusive_EE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 0. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
 
+<<<<<<< HEAD
 # #  # pT < 45
 #  leading_mu_pt_45_BB: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt < 45. && abs(mu1_eta)<0.9 && abs(mu2_eta)<0.9"]
 #  leading_mu_pt_45_BO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt < 45. && abs(mu1_eta)<0.9 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
@@ -69,19 +69,68 @@ further_cuts: {}
 #  leading_mu_pt_52_EB: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 45. && mu1_pt < 52. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)<0.9"]
 #  leading_mu_pt_52_EO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 45. && mu1_pt < 52. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
 #  leading_mu_pt_52_EE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 45. && mu1_pt < 52. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
+=======
+# #  # pT < 26
+#  leading_mu_pt_upto26_etainclusive: [["mu1_pt"], "mu1_pt < 26."]
+#  leading_mu_pt_upto26_BB: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt < 26. && abs(mu1_eta)<0.9 && abs(mu2_eta)<0.9"]
+#  leading_mu_pt_upto26_BO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt < 26. && abs(mu1_eta)<0.9 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
+#  leading_mu_pt_upto26_BE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt < 26. && abs(mu1_eta)<0.9 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
+#  leading_mu_pt_upto26_OB: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt < 26. && abs(mu1_eta)>=0.9 && abs(mu1_eta)<1.8 && abs(mu2_eta)<0.9"]
+#  leading_mu_pt_upto26_OO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt < 26. && abs(mu1_eta)>=0.9 && abs(mu1_eta)<1.8 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
+#  leading_mu_pt_upto26_OE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt < 26. && abs(mu1_eta)>=0.9 && abs(mu1_eta)<1.8 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
+#  leading_mu_pt_upto26_EB: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt < 26. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)<0.9"]
+#  leading_mu_pt_upto26_EO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt < 26. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
+#  leading_mu_pt_upto26_EE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt < 26. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
+
+#  leading_mu_pt_26to45_etainclusive: [["mu1_pt"], "mu1_pt >= 26 && mu1_pt < 45"]
+#  leading_mu_pt_26to45_BB: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 26 && mu1_pt < 45. && abs(mu1_eta)<0.9 && abs(mu2_eta)<0.9"]
+#  leading_mu_pt_26to45_BO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 26 && mu1_pt < 45. && abs(mu1_eta)<0.9 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
+#  leading_mu_pt_26to45_BE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 26 && mu1_pt < 45. && abs(mu1_eta)<0.9 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
+#  leading_mu_pt_26to45_OB: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 26 && mu1_pt < 45. && abs(mu1_eta)>=0.9 && abs(mu1_eta)<1.8 && abs(mu2_eta)<0.9"]
+#  leading_mu_pt_26to45_OO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 26 && mu1_pt < 45. && abs(mu1_eta)>=0.9 && abs(mu1_eta)<1.8 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
+#  leading_mu_pt_26to45_OE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 26 && mu1_pt < 45. && abs(mu1_eta)>=0.9 && abs(mu1_eta)<1.8 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
+#  leading_mu_pt_26to45_EB: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 26 && mu1_pt < 45. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)<0.9"]
+#  leading_mu_pt_26to45_EO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 26 && mu1_pt < 45. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
+#  leading_mu_pt_26to45_EE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 26 && mu1_pt < 45. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
+# #  # pT < 45
+#  leading_mu_pt_upto45_etainclusive: [["mu1_pt"], "mu1_pt < 45."]
+#  leading_mu_pt_upto45_BB: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt < 45. && abs(mu1_eta)<0.9 && abs(mu2_eta)<0.9"]
+#  leading_mu_pt_upto45_BO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt < 45. && abs(mu1_eta)<0.9 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
+#  leading_mu_pt_upto45_BE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt < 45. && abs(mu1_eta)<0.9 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
+#  leading_mu_pt_upto45_OB: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt < 45. && abs(mu1_eta)>=0.9 && abs(mu1_eta)<1.8 && abs(mu2_eta)<0.9"]
+#  leading_mu_pt_upto45_OO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt < 45. && abs(mu1_eta)>=0.9 && abs(mu1_eta)<1.8 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
+#  leading_mu_pt_upto45_OE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt < 45. && abs(mu1_eta)>=0.9 && abs(mu1_eta)<1.8 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
+#  leading_mu_pt_upto45_EB: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt < 45. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)<0.9"]
+#  leading_mu_pt_upto45_EO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt < 45. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
+#  leading_mu_pt_upto45_EE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt < 45. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
+
+# #  45 ≤ pT < 52
+#  leading_mu_pt_45to52_etainclusive: [["mu1_pt"], "mu1_pt >= 45. && mu1_pt < 52"]
+#  leading_mu_pt_45to52_BB: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 45. && mu1_pt < 52. && abs(mu1_eta)<0.9 && abs(mu2_eta)<0.9"]
+#  leading_mu_pt_45to52_BO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 45. && mu1_pt < 52. && abs(mu1_eta)<0.9 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
+#  leading_mu_pt_45to52_BE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 45. && mu1_pt < 52. && abs(mu1_eta)<0.9 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
+#  leading_mu_pt_45to52_OB: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 45. && mu1_pt < 52. && abs(mu1_eta)>=0.9 && abs(mu1_eta)<1.8 && abs(mu2_eta)<0.9"]
+#  leading_mu_pt_45to52_OO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 45. && mu1_pt < 52. && abs(mu1_eta)>=0.9 && abs(mu1_eta)<1.8 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
+#  leading_mu_pt_45to52_OE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 45. && mu1_pt < 52. && abs(mu1_eta)>=0.9 && abs(mu1_eta)<1.8 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
+#  leading_mu_pt_45to52_EB: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 45. && mu1_pt < 52. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)<0.9"]
+#  leading_mu_pt_45to52_EO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 45. && mu1_pt < 52. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
+#  leading_mu_pt_45to52_EE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 45. && mu1_pt < 52. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
+>>>>>>> d9d5fda766ad0f951a31307f24beca9ac4623a2c
 
 #  # 52 ≤ pT < 62
-#  leading_mu_pt_62_BB: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 52. && mu1_pt < 62. && abs(mu1_eta)<0.9 && abs(mu2_eta)<0.9"]
-#  leading_mu_pt_62_BO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 52. && mu1_pt < 62. && abs(mu1_eta)<0.9 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
-#  leading_mu_pt_62_BE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 52. && mu1_pt < 62. && abs(mu1_eta)<0.9 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
-#  leading_mu_pt_62_OB: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 52. && mu1_pt < 62. && abs(mu1_eta)>=0.9 && abs(mu1_eta)<1.8 && abs(mu2_eta)<0.9"]
-#  leading_mu_pt_62_OO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 52. && mu1_pt < 62. && abs(mu1_eta)>=0.9 && abs(mu1_eta)<1.8 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
-#  leading_mu_pt_62_OE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 52. && mu1_pt < 62. && abs(mu1_eta)>=0.9 && abs(mu1_eta)<1.8 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
-#  leading_mu_pt_62_EB: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 52. && mu1_pt < 62. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)<0.9"]
-#  leading_mu_pt_62_EO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 52. && mu1_pt < 62. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
-#  leading_mu_pt_62_EE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 52. && mu1_pt < 62. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
+#  leading_mu_pt_52to62_etainclusive: [["mu1_pt"], "mu1_pt >= 52. && mu1_pt < 62. "]
+#  leading_mu_pt_52to62_BB: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 52. && mu1_pt < 62. && abs(mu1_eta)<0.9 && abs(mu2_eta)<0.9"]
+#  leading_mu_pt_52to62_BO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 52. && mu1_pt < 62. && abs(mu1_eta)<0.9 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
+#  leading_mu_pt_52to62_BE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 52. && mu1_pt < 62. && abs(mu1_eta)<0.9 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
+#  leading_mu_pt_52to62_OB: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 52. && mu1_pt < 62. && abs(mu1_eta)>=0.9 && abs(mu1_eta)<1.8 && abs(mu2_eta)<0.9"]
+#  leading_mu_pt_52to62_OO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 52. && mu1_pt < 62. && abs(mu1_eta)>=0.9 && abs(mu1_eta)<1.8 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
+#  leading_mu_pt_52to62_OE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 52. && mu1_pt < 62. && abs(mu1_eta)>=0.9 && abs(mu1_eta)<1.8 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
+#  leading_mu_pt_52to62_EB: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 52. && mu1_pt < 62. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)<0.9"]
+#  leading_mu_pt_52to62_EO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 52. && mu1_pt < 62. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
+#  leading_mu_pt_52to62_EE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 52. && mu1_pt < 62. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
 
 # #  # pT ≥ 62
+<<<<<<< HEAD
 #  leading_mu_pt_up_BB: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 62. && abs(mu1_eta)<0.9 && abs(mu2_eta)<0.9"]
 #  leading_mu_pt_up_BO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 62. && abs(mu1_eta)<0.9 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
 #  leading_mu_pt_up_BE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 62. && abs(mu1_eta)<0.9 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
@@ -91,6 +140,18 @@ further_cuts: {}
 #  leading_mu_pt_up_EB: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 62. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)<0.9"]
 #  leading_mu_pt_up_EO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 62. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
 #  leading_mu_pt_up_EE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 62. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
+=======
+#  leading_mu_pt_above62_etainclusive: [["mu1_pt"], "mu1_pt >= 62."]
+#  leading_mu_pt_above62_BB: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 62. && abs(mu1_eta)<0.9 && abs(mu2_eta)<0.9"]
+#  leading_mu_pt_above62_BO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 62. && abs(mu1_eta)<0.9 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
+#  leading_mu_pt_above62_BE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 62. && abs(mu1_eta)<0.9 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
+#  leading_mu_pt_above62_OB: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 62. && abs(mu1_eta)>=0.9 && abs(mu1_eta)<1.8 && abs(mu2_eta)<0.9"]
+#  leading_mu_pt_above62_OO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 62. && abs(mu1_eta)>=0.9 && abs(mu1_eta)<1.8 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
+#  leading_mu_pt_above62_OE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 62. && abs(mu1_eta)>=0.9 && abs(mu1_eta)<1.8 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
+#  leading_mu_pt_above62_EB: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 62. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)<0.9"]
+#  leading_mu_pt_above62_EO: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 62. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)>=0.9 && abs(mu2_eta)<1.8"]
+#  leading_mu_pt_above62_EE: [["mu1_pt", "mu1_eta", "mu2_eta"], "mu1_pt >= 62. && abs(mu1_eta)>=1.8 && abs(mu1_eta)<2.4 && abs(mu2_eta)>=1.8 && abs(mu2_eta)<2.4"]
+>>>>>>> d9d5fda766ad0f951a31307f24beca9ac4623a2c
 
 
 MuMuMassRegions:  ### ALL same w.r.t. Run 2 ###
@@ -98,7 +159,8 @@ MuMuMassRegions:  ### ALL same w.r.t. Run 2 ###
   Signal_Fit: "m_mumu > 115 && m_mumu < 135"
   H_sideband: "((m_mumu > 110 && m_mumu < 115) || (m_mumu > 135 && m_mumu < 150))"
   Signal_ext: "m_mumu > 110 && m_mumu < 150"
-  mass_inclusive: "true"
+  mass_inclusive: "m_mumu > 60 && m_mumu < 150"
+  # mass_inclusive: "true"
 
 triggers:
   muMu: [ singleMu ]
@@ -119,19 +181,53 @@ singleMu_th:
 categories:
   # - baseline_MuonPOG
   - no_cuts
+  - baseline_WPIso_MM # baseline_WPIso_ML
   - OS_sel
   - trigger_sel
   - baseline_muonJet
   - VBF_def
+<<<<<<< HEAD
   - VBF
   - VBF_JetVeto
   - ggH
   - baseline_HornJetVeto
 
+=======
+  - VBF_JetVeto
+  - ggH
+  - ggH_muonPtSel
+  - baseline_muonJet_0J
+  - baseline_muonJet_1J
+  - baseline_muonJet_2J
+  - VBF_def_2J
+  - VBF_JetVeto_2J
+  - ggH_2J
+  - baseline_muonJet_MoreThan2J
+  - VBF_def_MoreThan2J
+  - VBF_JetVeto_MoreThan2J
+  - ggH_MoreThan2J
+>>>>>>> d9d5fda766ad0f951a31307f24beca9ac4623a2c
 
+# muons pT choice options:
+#   pt = ScaRe corrected pT, can be either nano or BSC according on which pT has been used for scare application;
+#   pt_nano = pT from nanoAOD without scale and resol;
+#   bsConstrainedPt: BSC pT without scale and resol;
+#   pt_roccor: pT with RoccoR corrections applied, can be either nano or BSC according on which pT has been used for Rocccor application; not yet implemented
+extraFormat_for_triggerMatchingAndSF:
+  pt: "bsConstrainedPt"
+muon_pt_for_presel: "bsConstrainedPt"
+mu_pt_for_triggerMatchingAndSF: "bsConstrainedPt"
+mu_pt_for_selection: "pt"
+
+mu_pt_for_definitions: "ScaRe" # here options are different: corr, nano, bsConstrainedPt, roccor
+muonID_WP_for_triggerSF: "Medium" # only medium or tight for trigger SF, both iso and ID
+muIDWP: "Medium"
+muIsoWP: "Loose"
+WP_to_use: "MM"
 
 category_definition:
   no_cuts: "true"
+<<<<<<< HEAD
   baseline_WPIso: "mu1_pfRelIso04_all < 0.25 &&  mu2_pfRelIso04_all< 0.25 && mu1_mediumId && mu2_mediumId"
   OS_sel: "baseline_WPIso && OS"
   trigger_sel: "( (mu1_pt > {MuPtTh} && mu1_HasMatching_singleMu) || (mu2_pt > {MuPtTh} && mu2_HasMatching_singleMu) )"
@@ -195,6 +291,33 @@ category_definition:
 
 
 
+=======
+  baseline_WPIso_MM: "mu1_pfRelIso04_all < 0.2 &&  mu2_pfRelIso04_all< 0.2 && mu1_mediumId && mu2_mediumId"
+  baseline_WPIso_ML: "mu1_pfRelIso04_all < 0.25 &&  mu2_pfRelIso04_all< 0.25 && mu1_mediumId && mu2_mediumId"
+  OS_sel: "baseline_WPIso_{WP_to_use} && OS"
+  trigger_sel: "( (mu1_{mu_pt_for_selection} > {MuPtTh} && mu1_HasMatching_singleMu) || (mu2_{mu_pt_for_selection} > {MuPtTh} && mu2_HasMatching_singleMu) )"
+  # trigger_sel_withDiMuon: "trigger_sel || ( (mu1_{mu_pt_for_selection} > 19 && mu1_HasMatching_diMu) && (mu2_{mu_pt_for_selection} > 10 && mu2_HasMatching_diMu) )"
+  baseline_muonJet: "OS_sel && trigger_sel && JetTagSel" # &&  abs(mu1_dz) < 1. && abs(mu1_dxy) < 0.5 && abs(mu2_dz) < 1. && abs(mu2_dxy) < 0.5"
+  VBF_def: "baseline_muonJet && HasVBF"
+  VBF_JetVeto: "VBF_def && j1_pt >= 35 && j2_pt >= 25 "
+  ggH_muonPtSel: "baseline_muonJet && !(VBF_JetVeto) && mu1_{mu_pt_for_selection} > {MuPtTh} && mu2_{mu_pt_for_selection}>{MuPtTh}"
+  ggH: "baseline_muonJet && !(VBF_JetVeto)"
+  #### 0 jets
+  baseline_muonJet_0J: "baseline_muonJet && N_SelectedJets == 0"
+  #### 1 jets
+  baseline_muonJet_1J: "baseline_muonJet && N_SelectedJets == 1"
+  #### 2 jets
+  baseline_muonJet_2J: "baseline_muonJet && N_SelectedJets == 2"
+  VBF_def_2J: "baseline_muonJet_2J && HasVBF"
+  VBF_JetVeto_2J: "VBF_def && j1_pt >= 35 && j2_pt >= 25 "
+  ggH_2J: "baseline_muonJet_2J && !(VBF_JetVeto_2J)"
+  #### ≥2 jets
+  baseline_muonJet_MoreThan2J: "baseline_muonJet && N_SelectedJets >= 2"
+  VBF_def_MoreThan2J: "baseline_muonJet_MoreThan2J && HasVBF"
+  VBF_JetVeto_MoreThan2J: "VBF_def && j1_pt >= 35 && j2_pt >= 25 "
+  ggH_MoreThan2J: "baseline_muonJet_MoreThan2J && !(VBF_JetVeto_MoreThan2J)"
+  baseline_MuonPOG: "OS_sel && trigger_sel && mu1_pfRelIso04_all < 0.15 && mu2_pfRelIso04_all< 0.15 && mu1_tightId && mu2_tightId && mu1_{mu_pt_for_selection} > {MuPtTh} && mu2_{mu_pt_for_selection}>{MuPtTh}"
+>>>>>>> d9d5fda766ad0f951a31307f24beca9ac4623a2c
 
 # category_definition:
 #   #### COMPARISON WITH RUN 2 ####
@@ -232,6 +355,7 @@ category_definition:
 # - VBF Jets selection compared to Run2. It is the same selection, but since there could be MORE than one jet pair, the one with highest invariant mass is excluded, keeping the DeltaEta threshold fixed to 2.5
 
 corrections:
+<<<<<<< HEAD
   - JEC
   - Jet_horns_fix
   - JER
@@ -241,23 +365,39 @@ corrections:
   #  - btagWP
   # - mu
   # - Vpt
+=======
+  mu:
+    stage: HistTuple
+    columns:
+      pfRelIso04_all: pfRelIso04_all
+      tightId: tightId
+      tkRelIso: tkRelIso
+      highPtId: highPtId
+      mediumId: mediumId
+      looseId: looseId
+      p4: p4_bsConstrainedPt # p4_pt_nano
+  trigger:
+    stage: HistTuple
+    mode: SF
+    extraFormat:
+      pt: "bsConstrainedPt"
+  muScaRe:
+    stage: AnaTuple # later it will become anaTuple.
+    # stage: HistTuple # later it will become anaTuple.
+    mu_pt_for_ScaReApplication: "bsConstrainedPt"
+  MC_Lumi_pu: { stage: AnaTuple }
+  pu: { stages: [ AnaCache, AnaTuple ] }
+  JEC: { stage: AnaTuple }
+  JER:
+    stage: AnaTuple
+    apply_jet_horns_fix: true
+>>>>>>> d9d5fda766ad0f951a31307f24beca9ac4623a2c
 
 scales:
   - Up
   - Down
 
 ApplyBweight: False
-
-sample_types_to_merge:
-  - DY
-  - TT
-  - W
-  - EWK
-  - VVV
-  - VV
-  - ST
-  - TW
-  - TTX
 
 payload_producers:
   DNN:

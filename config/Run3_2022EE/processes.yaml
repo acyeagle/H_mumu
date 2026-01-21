@@ -1,11 +1,35 @@
 ############## DY ##############
 DY:
-  name: "DY 012 jets"
-  cross_section_correction: 12/ 11  # NLO -> NNLO
+  name: "DY"
   color: "kAzure+7"
   color_mplhep: lightskyblue
+  sub_processes:
+    - DY_M_10to50
+    - DYto2E_M_50
+    - DYto2Mu_M_50
+    - DYto2Tau_M_50
+
+DY_M_10to50:
+  name: "DY M10to50"
+  color: "kAzure+10"
+  corrections:
+    - name: Vpt
+      type: DY
   datasets:
+    - DYto2E_M_10to50_amcatnloFXFX
+    - DYto2Mu_M_10to50_amcatnloFXFX
+    - DYto2Tau_M_10to50_amcatnloFXFX
+
+DYto2E_M_50:
+  processors: *DY_processors
+  corrections:
+    - name: Vpt
+      type: DY
+  datasets:
+    - DYto2E_M_50_amcatnloFXFX
+    - DYto2E_M_50_amcatnloFXFX_ext1
     - DYto2E_M_50_0J_amcatnloFXFX
+<<<<<<< HEAD
     - DYto2Mu_M_50_0J_amcatnloFXFX
     # - DYto2Tau_M_50_0J_Filtered_amcatnloFXFX
     - DYto2Tau_M_50_0J_amcatnloFXFX
@@ -13,9 +37,55 @@ DY:
     - DYto2Mu_M_50_1J_amcatnloFXFX
     # - DYto2Tau_M_50_1J_Filtered_amcatnloFXFX
     - DYto2Tau_M_50_1J_amcatnloFXFX
+=======
+    - DYto2E_M_50_1J_amcatnloFXFX
+>>>>>>> d9d5fda766ad0f951a31307f24beca9ac4623a2c
     - DYto2E_M_50_2J_amcatnloFXFX
+    - DYto2E_M_50_PTLL_40to100_1J_amcatnloFXFX
+    - DYto2E_M_50_PTLL_100to200_1J_amcatnloFXFX
+    - DYto2E_M_50_PTLL_200to400_1J_amcatnloFXFX
+    - DYto2E_M_50_PTLL_400to600_1J_amcatnloFXFX
+    - DYto2E_M_50_PTLL_600_1J_amcatnloFXFX
+    - DYto2E_M_50_PTLL_40to100_2J_amcatnloFXFX
+    - DYto2E_M_50_PTLL_100to200_2J_amcatnloFXFX
+    - DYto2E_M_50_PTLL_200to400_2J_amcatnloFXFX
+    - DYto2E_M_50_PTLL_400to600_2J_amcatnloFXFX
+    - DYto2E_M_50_PTLL_600_2J_amcatnloFXFX
+
+DYto2Mu_M_50:
+  processors: *DY_processors
+  corrections:
+    - name: Vpt
+      type: DY
+  datasets:
+    - DYto2Mu_M_50_amcatnloFXFX
+    - DYto2Mu_M_50_amcatnloFXFX_ext1
+    - DYto2Mu_M_50_0J_amcatnloFXFX
+    - DYto2Mu_M_50_1J_amcatnloFXFX
     - DYto2Mu_M_50_2J_amcatnloFXFX
+<<<<<<< HEAD
     # - DYto2Tau_M_50_2J_Filtered_amcatnloFXFX
+=======
+    - DYto2Mu_M_50_PTLL_40to100_1J_amcatnloFXFX
+    - DYto2Mu_M_50_PTLL_100to200_1J_amcatnloFXFX
+    - DYto2Mu_M_50_PTLL_200to400_1J_amcatnloFXFX
+    - DYto2Mu_M_50_PTLL_400to600_1J_amcatnloFXFX
+    - DYto2Mu_M_50_PTLL_600_1J_amcatnloFXFX
+    - DYto2Mu_M_50_PTLL_40to100_2J_amcatnloFXFX
+    - DYto2Mu_M_50_PTLL_100to200_2J_amcatnloFXFX
+    - DYto2Mu_M_50_PTLL_200to400_2J_amcatnloFXFX
+    - DYto2Mu_M_50_PTLL_400to600_2J_amcatnloFXFX
+    - DYto2Mu_M_50_PTLL_600_2J_amcatnloFXFX
+
+DYto2Tau_M_50:
+  processors: *DY_processors
+  corrections:
+    - name: Vpt
+      type: DY
+  datasets:
+    - DYto2Tau_M_50_0J_amcatnloFXFX
+    - DYto2Tau_M_50_1J_amcatnloFXFX
+>>>>>>> d9d5fda766ad0f951a31307f24beca9ac4623a2c
     - DYto2Tau_M_50_2J_amcatnloFXFX
 
 
@@ -75,24 +145,6 @@ EWK:
   color_mplhep: darkmagenta
   datasets:
     - EWK_2L2J_madgraph_herwig
-
-EWK_LLJJ_herwig:
-  name: "EWK"
-  color: kMagenta+3
-  color_mplhep: darkmagenta
-  datasets: [ ]
-
-EWK_LLJJ_M105_160:
-  name: "EWK"
-  color: kMagenta+3
-  color_mplhep: darkmagenta
-  datasets: [ ]
-
-EWK_LLJJ_M105_160_VBFFilter:
-  name: "EWK"
-  color: kMagenta+3
-  color_mplhep: darkmagenta
-  datasets: [ ]
 
 ############## Other single H  ##############
 H_mainBckg:

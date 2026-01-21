@@ -15,16 +15,17 @@ from Studies.DNN.model_generation.parse_column_names import parse_column_names
 import FLAF.Common.Utilities as Utilities
 import Analysis.H_mumu as analysis
 from FLAF.Common.Utilities import DeclareHeader
+from Corrections.Corrections import Corrections
 
 
 class DNNProducer:
-    def __init__(self, cfg, payload_name):
+    def __init__(self, cfg, payload_name, period):
         print("DNN Producer init!")
         # cfg is H_mumu/configs/global.yaml
         self.cfg = cfg
         self.global_cfg = self._load_global_config()
         self.payload_name = payload_name
-        self.period = "Run3_2022"
+        self.period = period
         self._load_framework()
         self.parity, self.input_features = self._load_dnn_config()
         # Columns for tmp file
@@ -89,12 +90,18 @@ class DNNProducer:
 
     ### Functions for running the inference ###
 
-    def prepare_dfw(self, dfw):
+    def prepare_dfw(self, dfw, dataset_name):
         print("*********** Running prepare_dfw...")
+        analysis.InitializeCorrections(self.period, dataset_name, stage="HistTuple")
+        corrections = Corrections.getGlobal()
         dfw = analysis.DataFrameBuilderForHistograms(
-            dfw.df, self.global_cfg, self.period
+            dfw.df, self.global_cfg, self.period, corrections
         )
-        dfw = analysis.PrepareDfForNNInputs(dfw)
+        print(
+            f"when creating DataFrameBuilderForHistograms, dfw has {dfw.df.Count().GetValue()} entries"
+        )
+        dfw = analysis.PrepareDFBuilder(dfw)
+        print(f"on top of PrepareDFBuilder it has {dfw.df.Count().GetValue()} entries")
         return dfw
 
     def ApplyDNN(self, branches):
