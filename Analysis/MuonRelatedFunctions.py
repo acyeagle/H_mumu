@@ -95,6 +95,18 @@ def GetMuMuMassResolution(df, pt_to_use):
 
 
 def GetMuMuP4Observables(df):
+
+    if "mu1_bsConstrainedPt" in df.GetColumnNames() and "mu1_pt_bsConstrained" not in df.GetColumnNames():
+        df = df.Define(
+            "mu1_pt_bsConstrained", "mu1_bsConstrainedPt"
+        )  # to have a uniform naming
+    if "mu2_bsConstrainedPt" in df.GetColumnNames()  and "mu2_pt_bsConstrained" not in df.GetColumnNames():
+        df = df.Define(
+            "mu2_pt_bsConstrained", "mu2_bsConstrainedPt")
+
+    df = df.Define("mu1_p4_bsConstrainedPt", "ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double>>(mu1_bsConstrainedPt,mu1_eta,mu1_phi,mu1_mass)")
+    df = df.Define("mu2_p4_bsConstrainedPt", "ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double>>(mu2_bsConstrainedPt,mu2_eta,mu2_phi,mu2_mass)")
+
     pt_def = [col for col in df.GetColumnNames() if f"mu1_pt_" in col]
     print(f"pt defined are: {pt_def}")
     muon_p4_to_define = list(set(["_".join(pt.split("_")[2:]) for pt in pt_def]))
@@ -152,8 +164,12 @@ def GetAllMuMuCorrectedPtRelatedObservables(
         df = df.Redefine(f"mu{mu_idx}_p4", f"mu{mu_idx}_p4_{suffix}")
         df = df.Redefine(f"mu{mu_idx}_pt", f"mu{mu_idx}_p4_{suffix}.Pt()")
         df = df.Define(
-            f"mu{mu_idx}_pt_rel_{suffix}", f"mu{mu_idx}_pt_{suffix}/m_mumu_{suffix}"
+            f"mu{mu_idx}_pt_rel_{suffix}", f"mu{mu_idx}_pt_{suffix}/m_mumu"
         )
-        df = df.Define(f"mu{mu_idx}_pt_rel", f"mu{mu_idx}_pt_{suffix}/m_mumu_{suffix}")
+        df = df.Define(f"mu{mu_idx}_pt_rel", f"mu{mu_idx}_pt_{suffix}/m_mumu")
+        # df = df.Define(
+        #     f"mu{mu_idx}_pt_rel_{suffix}", f"mu{mu_idx}_pt_{suffix}/m_mumu"
+        # )
+        # df = df.Define(f"mu{mu_idx}_pt_rel", f"mu{mu_idx}_pt_{suffix}/m_mumu")
 
     return df

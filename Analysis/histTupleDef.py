@@ -31,20 +31,7 @@ def analysis_setup(setup):
     analysis = importlib.import_module(f"{analysis_import}")
 
 
-<<<<<<< HEAD
-
-def GetDfw(
-    df,
-    df_caches,
-    global_params,
-    shift="Central",
-    col_names_central=[],
-    col_types_central=[],
-    cache_map_name="cache_map_Central",
-):
-=======
 def GetDfw(df, global_params):
->>>>>>> d9d5fda766ad0f951a31307f24beca9ac4623a2c
     period = global_params["era"]
     kwargset = (
         {}
@@ -116,7 +103,11 @@ def DefineWeightForHistograms(
         defineTriggerWeights(
             dfw, global_params.get("mu_pt_for_triggerMatchingAndSF", "pt_nano")
         )
-        if df_is_central:
+        if (
+            df_is_central
+            and global_params["compute_unc_histograms"]
+            and "trigger" in corrections.to_apply.keys()
+        ):
             defineTriggerWeightsErrors(
                 dfw,
                 global_params.get("mu_pt_for_triggerMatchingAndSF", "pt_nano"),
@@ -155,12 +146,13 @@ def DefineWeightForHistograms(
             )
     # print(f"Defining final weight: {final_weight_name} as {weight_name}")
     dfw.df = dfw.df.Define(final_weight_name, weight_name)
+    return dfw
 
-    filter_to_use = "baseline_muonJet"
-    print( f"There are {dfw.df.Filter(filter_to_use).Sum(final_weight_name).GetValue()} events in {filter_to_use}")
-    filter_to_use = "Z_sideband && baseline_muonJet"
-    print( f"There are {dfw.df.Filter(filter_to_use).Sum(final_weight_name).GetValue()} events in {filter_to_use}")
+    # filter_to_use = "baseline_muonJet"
+    # print( f"There are {dfw.df.Filter(filter_to_use).Sum(final_weight_name).GetValue()} events in {filter_to_use}")
+    # filter_to_use = "Z_sideband && baseline_muonJet"
+    # print( f"There are {dfw.df.Filter(filter_to_use).Sum(final_weight_name).GetValue()} events in {filter_to_use}")
 
-    # dfw.df = dfw.df.Define("JetOutsideOfHornVetoRegion", "Jet_NoOverlapWithMuons && ( abs(v_ops::eta(Jet_p4)) < 2.5 || abs(v_ops::eta(Jet_p4)) > 3 || v_ops::pt(Jet_p4) > 50 ) ")
-    filter_to_use = "Z_sideband && baseline_muonJet && Jet_p4[JetOutsideOfHornVetoRegion].size()>=2"
-    print( f"There are {dfw.df.Filter(filter_to_use).Sum(final_weight_name).GetValue()} events in {filter_to_use}")
+    # # dfw.df = dfw.df.Define("JetOutsideOfHornVetoRegion", "Jet_NoOverlapWithMuons && ( abs(v_ops::eta(Jet_p4)) < 2.5 || abs(v_ops::eta(Jet_p4)) > 3 || v_ops::pt(Jet_p4) > 50 ) ")
+    # filter_to_use = "Z_sideband && baseline_muonJet && Jet_p4[JetOutsideOfHornVetoRegion].size()>=2"
+    # print( f"There are {dfw.df.Filter(filter_to_use).Sum(final_weight_name).GetValue()} events in {filter_to_use}")

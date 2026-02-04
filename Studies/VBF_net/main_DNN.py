@@ -109,7 +109,7 @@ if __name__ == "__main__":
     df = pl.load_to_dataframe()
     if 'NN_Output' in df.columns:
         df.rename(columns={'NN_Output' : 'VBFNet_Output'}, inplace=True)
-    df = df[df.VBF_JetVeto & (df.VBFNet_Output > 0.534158)]
+    df = df[df.Signal_Fit & (df.VBFNet_Output >= 0.0)]
     df.reset_index(inplace=True, drop=True)
 
     # Init the tester

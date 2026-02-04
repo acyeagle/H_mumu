@@ -1,19 +1,19 @@
 meta_data:
   global_config: /afs/cern.ch/user/a/ayeagle/H_mumu/config/global.yaml
-  output_folder: /eos/user/a/ayeagle/H_mumu/root_files/TEST/
+  output_folder: /eos/user/a/ayeagle/H_mumu/root_files/v4_DNN_samples_Mk2/
   input_folder: /eos/user/e/eusebi/Hmumu/anaTuples/v4_20Nov_NewJetIDs_LooseMuons/
-  selection_cut: Signal_ext
+  selection_cut: Signal_Fit
 
 sample_list:
   #- DY
-  # - EWK
+  - EWK
   - GluGluHto2Mu
-  # - VBFHto2Mu
-  # - TT
-  # - VV
-  # - ST
-  # - VVV
-  # - TW
-  # - TTX
+  - VBFHto2Mu
+  - TT
+  - VV
+  # # - ST
+  # # - VVV
+  # # - TW
+  # # - TTX
   # - data
 

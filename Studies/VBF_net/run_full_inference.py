@@ -95,6 +95,8 @@ if __name__ == "__main__":
     print("Reading in dataframe...")
     pl = PandasLoader(args.datafile, **config["dataset"])
     df = pl.load_to_dataframe()
+    if 'NN_Output' in df.columns:
+        df.rename(columns={'NN_Output' : 'VBFNet_Output'}, inplace=True)
     df = df[df.Signal_Fit]
     df.reset_index(inplace=True, drop=True)
     df.rename({'NN_Output': 'VBFNet_Output'}, inplace=True)

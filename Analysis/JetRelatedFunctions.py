@@ -204,6 +204,33 @@ def JetCollectionDef(df):
     return df
 
 
+
+def JetObservablesDef(df):
+    jet_names = {
+        0: "leading",
+        1: "subleading",
+        2: "third",
+        3: "fourth",
+    }
+    for jet_idx, jet_type in jet_names.items():
+        # for JetObservable in JetObservables:
+        #     df = df.Define(f"{jet_type}jet_{JetObservable}", "if (SelectedJet_index.size()>{jet_idx}) return static_cast<float>({JetObservable}.at(SelectedJet_index[{jet_idx}])); else return -1000.f;")
+        for jet_obs in ["pt", "eta", "phi", "rapidity"]:
+            df = df.Define(
+                f"{jet_type}jet_{jet_obs}",
+                f"if (SelectedJet_p4.size()>{jet_idx}) return static_cast<float>(v_ops::{jet_obs}(SelectedJet_p4)[{jet_idx}]); else return -1000.f;",
+            )
+    # define Jet HT:
+    if "SelectedJet_pt" not in df.GetColumnNames():
+        df = df.Define("SelectedJet_pt", "v_ops::pt(SelectedJet_p4)")
+    df = df.Define(
+        f"SelectedJets_HT",
+        "float SelectedJet_HT; for(size_t jet_idx = 0; jet_idx < SelectedJet_pt.size() ; jet_idx++){SelectedJet_HT+=SelectedJet_pt[jet_idx];} return SelectedJet_HT;",
+    )
+    # df.Display({"SelectedJets_HT"}).Print()
+
+    return df
+
 def VBFJetSelection(df):
     df = df.Define("VBFJetCand", "FindVBFJets(Jet_p4,Jet_NoOverlapWithMuons)")
     df = df.Define("HasVBF", "return static_cast<bool>(VBFJetCand.isVBF) ")
@@ -333,36 +360,7 @@ def VBFJetMuonsObservables(df):
     return df
 
 
-def VBFNetJetCollectionDef(df):
-    if "Jet_idx" not in df.GetColumnNames():
-        print("Jet_idx not in df.GetColumnNames")
-        df = df.Define(f"Jet_idx", f"CreateIndexes(Jet_pt.size())")
-
-
-    if "Jet_p4" not in df.GetColumnNames():
-        df = df.Define(
-            f"Jet_p4",
-            f"GetP4(Jet_pt, Jet_eta, Jet_phi, Jet_mass, Jet_idx)",
-        )
-
-    #### Jet PreSelection ####
-    if "Jet_preSel" not in df.GetColumnNames():
-        df = df.Define(
-            "Jet_preSel",
-            f"""v_ops::pt(Jet_p4) > 20 && abs(v_ops::eta(Jet_p4))< 4.7 && (Jet_passJetIdTight) """,
-        )
-
-    if "Jet_preSel_andDeadZoneVetoMap" not in df.GetColumnNames():
-        df = df.Define(
-            "Jet_preSel_andDeadZoneVetoMap",
-            "Jet_preSel && !Jet_vetoMap",
-        )
-
-    if "Jet_NoOverlapWithMuons" not in df.GetColumnNames():
-        df = df.Define(
-            f"Jet_NoOverlapWithMuons",
-            f"RemoveOverlaps(Jet_p4, Jet_preSel_andDeadZoneVetoMap, {{mu1_p4, mu2_p4}}, 0.4)",
-        )
+def VBFNetJetCollectionDef(df, max_jets=4):
 
     # Define jets for VBF selector network
 
@@ -377,7 +375,13 @@ def VBFNetJetCollectionDef(df):
 
     for var in jet_vars:
         df = df.Define(
-            f"FilteredJet_{var}", f"Jet_{var}[VBFCandJet_selection]"
+            f"FilteredJet_{var}_vec", f"Jet_{var}[VBFCandJet_selection]"
         )
+
+        for i in range(max_jets):
+            df = df.Define(
+                f"FilteredJet_{var}_{i+1}",
+                f"static_cast<float>(FilteredJet_{var}_vec.size()>{i} ? FilteredJet_{var}_vec[{i}] : 0.0)"
+            )
 
     return df

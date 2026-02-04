@@ -195,6 +195,30 @@ def GetWeight(channel, process_name, muID_WP_for_SF, muIso_WP_for_SF):
 
 
 def InitializeCorrections(period, dataset_name, stage="HistTuple"):
+
+    headers_dir = os.path.dirname(os.path.abspath(__file__))
+    for include_path in ["ANALYSIS_PATH", "FLAF_PATH"]:
+        if include_path in os.environ:
+            ROOT.gROOT.ProcessLine(".include " + os.environ[include_path])
+    header_path_RootExt = "include/RootExt.h"
+    header_path_GenLepton = "include/GenLepton.h"
+    header_path_Gen = "include/BaselineGenSelection.h"
+    header_path_Reco = "include/BaselineRecoSelection.h"
+    header_path_AnalysisMath = "include/AnalysisMath.h"
+    ROOT.gInterpreter.Declare(f'#include "{header_path_RootExt}"')
+    ROOT.gInterpreter.Declare(f'#include "{header_path_GenLepton}"')
+    ROOT.gInterpreter.Declare(f'#include "{header_path_Gen}"')
+    ROOT.gInterpreter.Declare(f'#include "{header_path_Reco}"')
+    ROOT.gInterpreter.Declare(f'#include "{header_path_AnalysisMath}"')
+    for wpcl in [
+        WorkingPointsTauVSe,
+        WorkingPointsTauVSmu,
+        WorkingPointsTauVSjet,
+        WorkingPointsbTag,
+        WorkingPointsMuonID,
+    ]:
+        ROOT.gInterpreter.Declare(f"{generate_enum_class(wpcl)}") 
+
     setup = Setup.getGlobal(os.environ["ANALYSIS_PATH"], period)
     if dataset_name == "data":
         dataset_cfg = {}
@@ -308,14 +332,14 @@ class DataFrameBuilderForHistograms(DataFrameBuilderBase):
 def PrepareDFBuilder(dfBuilder):
     print("Preparing DFBuilder...")
     dfBuilder.df = GetMuMuP4Observables(dfBuilder.df)
+
     if (
         "muScaRe" in dfBuilder.corrections.to_apply
-        and config["corrections"]["muScaRe"]["stage"] == "HistTuples"
+        and dfBuilder.config["corrections"]["muScaRe"]["stage"] == "HistTuple"
     ):
         dfBuilder.df = dfBuilder.corrections.muScaRe.getP4VariationsForLegs(
             dfBuilder.df
         )
-
     dfBuilder.df = GetAllMuMuCorrectedPtRelatedObservables(
         dfBuilder.df, suffix=dfBuilder.config["mu_pt_for_definitions"]
     )
@@ -334,43 +358,5 @@ def PrepareDFBuilder(dfBuilder):
 
 
 def PrepareDfForVBFNetworkInputs(dfBuilder):
-    dfBuilder.df = RescaleXS(dfBuilder.df, dfBuilder.config)
-    dfBuilder.defineChannels()
-    dfBuilder.defineTriggers()
-    dfBuilder.SignRegionDef()
-
-    dfBuilder.df = AddScaReOnBS(dfBuilder.df, dfBuilder.period, dfBuilder.isData)
-    dfBuilder.df = AddRoccoR(dfBuilder.df, dfBuilder.period, dfBuilder.isData)
-
-    dfBuilder.df = RedefineIsoTrgAndIDWeights(dfBuilder.df, dfBuilder.period) # here nano pT is needed in any case because corrections are derived on nano pT
-
-
-    dfBuilder.df = AddNewDYWeights(dfBuilder.df, dfBuilder.period, f"DY" in dfBuilder.config["process_name"]) # here nano pT is needed in any case because corrections are derived on nano pT
-
-    dfBuilder.df = GetAllMuMuPtRelatedObservables(dfBuilder.df) # this can go before redefinition of pT because it defines for all the specific combinations
-
-    dfBuilder.df = GetMuMuMassResolution(dfBuilder.df) # this can go before redefinition of pT because it defines for all the specific combinations
-    dfBuilder.df = JetCollectionDef(dfBuilder.df)
-    dfBuilder.df = VBFJetSelection(dfBuilder.df)
-    dfBuilder.df = RedefineMuonsPt(dfBuilder.df, dfBuilder.config["pt_to_use"])
-    dfBuilder.df = RedefineDiMuonObservables(dfBuilder.df)
-
-    dfBuilder.df = VBFJetMuonsObservables(dfBuilder.df) # from here, the pT is needed to be specified as it depends on which muon pT to choose.
-
-
-    dfBuilder.defineRegions() # this depends on which muon pT to choose.
-    dfBuilder.defineCategories() # this depends on which muon  pT to choose.
-
-
-    if dfBuilder.isData:
-        total_weight_expression = "1.0"
-    else:
-        total_weight_expression = GetWeight()
-
-    print(total_weight_expression)
-     
-    dfBuilder.df = dfBuilder.df.Define("final_weight", total_weight_expression)
-
     dfBuilder.df = VBFNetJetCollectionDef(dfBuilder.df)
-
     return dfBuilder
