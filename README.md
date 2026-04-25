@@ -1,6 +1,10 @@
 # Hmumu
 Repository for the Hmumu analysis
 
+## Developer wiki
+
+New contributors can start with the [developer wiki](docs/dev-wiki/README.md) for architecture, local workflow, entry points, data flow, corrections, and tutorials.
+
 
 ## General Information
 [Central NANOAOD production](https://cms-nanoaod-integration.web.cern.ch/autoDoc/NanoAODv14/2024Prompt/doc_TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8_RunIII2024Summer24NanoAOD-140X_mcRun3_2024_realistic_v26-v2.html#Muon), taken from [Nano AOD documentation](https://gitlab.cern.ch/cms-nanoAOD/nanoaod-doc)
@@ -90,4 +94,3 @@ which in this example is Run3_2022.
     - suitable to compare results w/ run2 and for run2+run3 combination
 - switch to Run3 muon ID
 - investigate for new production setup  (e.g. flashsim)
-
