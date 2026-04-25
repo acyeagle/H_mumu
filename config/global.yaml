@@ -211,6 +211,7 @@ payload_producers:
     max_runtime: 2.0
     cmssw_env: False
     awkward_based: True
+    materialize_as: numpy
     uproot_stepsize: '50MB'
     dependencies: [ ]
   VBFNet:
@@ -222,6 +223,7 @@ payload_producers:
     max_runtime: 2.0
     cmssw_env: False
     awkward_based: True
+    materialize_as: numpy
     uproot_stepsize: '50MB'
     dependencies: [ ]
   PostVBFNetDNN:
@@ -233,5 +235,6 @@ payload_producers:
     max_runtime: 2.0
     cmssw_env: False
     awkward_based: True
+    materialize_as: numpy
     uproot_stepsize: '50MB'
     dependencies: [ ]
