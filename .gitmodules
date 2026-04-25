@@ -1,6 +1,7 @@
 [submodule "FLAF"]
 	path = FLAF
 	url = git@github.com:dataders/FLAF.git
+	branch = codex/experimental-arrow-cache
 [submodule "Corrections"]
 	path = Corrections
 	url = git@github.com:cms-flaf/Corrections.git
